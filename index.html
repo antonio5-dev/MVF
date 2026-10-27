@@ -1,0 +1,2028 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="padrao">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000" id="tc">
+<meta name="description" content="Minha Vida Financeira: controle de patrimônio, contas, cartões e dívidas">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Minha Vida">
+<title>Minha Vida Financeira</title>
+<style>
+:root{--bg:#0e1514;--card:#17221f;--tx:#e8f2ef;--mut:#8ea6a1;--bd:#2b3b37;--pri:#0f9488;--hd:#0b2f2b;--inp:#0f1917;--pos:#4ade80;--neg:#f87171;--warn:#fbbf24;color-scheme:dark}
+[data-theme=light]{--bg:#f1f5f4;--card:#fff;--tx:#16302b;--mut:#64748b;--bd:#cbd5d1;--pri:#0f766e;--hd:#0f766e;--inp:#fff;--pos:#15803d;--neg:#b91c1c;--warn:#b45309;color-scheme:light}
+[data-theme=padrao]{--bg:#000;--card:#131313;--tx:#f2f2f2;--mut:#8f8f8f;--bd:#262626;--pri:#3a3a3a;--hd:#000;--inp:#0b0b0b;--pos:#8fd6a4;--neg:#e88f8f;--warn:#e3c37a;color-scheme:dark;--fn:"Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Noto Serif",serif}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:system-ui,sans-serif;background:var(--bg);color:var(--tx);padding-bottom:calc(40px + env(safe-area-inset-bottom))}
+#app{max-width:480px;margin:auto}
+header{background:var(--hd);color:#fff;padding:calc(18px + env(safe-area-inset-top)) 16px 18px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:5}
+header h1{margin:0;font-size:19px;line-height:1.2;flex:1;min-width:0}
+header button{background:none;border:0;color:#fff;font-size:26px;padding:0 6px}
+header button.hb{width:30px;height:30px;border:2px solid #fff;border-radius:50%;font-size:16px;font-weight:700;padding:0;line-height:1;flex:none}
+header button.hi{flex:none;padding:4px;line-height:0;display:flex;align-items:center;justify-content:center}
+header button.hi svg{width:24px;height:24px}
+.pad{padding:14px}
+.card{background:var(--card);border-radius:14px;padding:14px;margin-bottom:12px;border:1px solid var(--bd)}
+.total{background:var(--pri);color:#fff;border-color:transparent}
+.total .v{font-size:30px;font-weight:700}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.btn{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:10px;font-size:16px;color:var(--tx);text-align:left}
+.pos{color:var(--pos)}.neg{color:var(--neg)}
+small,.sub{color:var(--mut);font-size:12px}
+.total small{color:#d5f3ee}
+.big{font-size:20px;font-weight:700}
+input,select{width:100%;padding:12px;margin:5px 0;border:1px solid var(--bd);border-radius:10px;font-size:16px;background:var(--inp);color:var(--tx)}
+input[type=checkbox]{width:auto;margin:0;padding:0;transform:scale(1.35);flex:none}
+.chk{display:flex;align-items:center;gap:12px;margin:12px 0 6px;font-size:14px}
+input:disabled,select:disabled{opacity:.5}
+.add{background:var(--pri);color:#fff;border:0;border-radius:10px;padding:13px;width:100%;font-size:16px;margin-top:6px}
+.danger{background:#b91c1c}
+.cancel{background:transparent;border:1px solid var(--bd);color:var(--tx)}
+.ic{background:none;border:0;font-size:18px;padding:4px 8px;color:var(--tx)}
+.mini{background:var(--pri);color:#fff;border:0;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;margin:2px 0}
+.mini.alt{background:transparent;border:1px solid var(--pri);color:var(--tx)}
+.nav{padding:8px 16px;font-size:18px;margin:0}
+.tag{font-size:11px;padding:2px 8px;border-radius:10px;border:1px solid var(--bd);margin-left:4px;font-weight:400}
+.tag.neg{border-color:var(--neg);font-weight:700}
+.it{padding-top:8px;margin-top:8px;border-top:1px solid var(--bd)}
+h3{margin:14px 0 8px}
+.gh{margin:16px 2px 8px;font-size:16px}
+.eye{background:#ffffff33;border:0;color:#fff;border-radius:20px;padding:6px 12px;font-size:14px}
+.warn{color:var(--warn);font-size:13px}
+.muted{opacity:.65}
+.nm{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 4px 12px}
+.nm span{font-size:22px;font-weight:600;overflow-wrap:anywhere}
+.ov{position:fixed;inset:0;background:#000a;display:flex;align-items:flex-start;justify-content:center;z-index:20}
+.sheet{background:var(--card);width:100%;max-width:480px;border-radius:0 0 18px 18px;padding:calc(16px + env(safe-area-inset-top)) 16px 16px;max-height:85vh;overflow:auto}
+#lock{display:none;position:fixed;inset:0;z-index:50;background:#000;color:#fff;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
+#lock .wm{font-family:"Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Noto Serif",serif;font-weight:300;font-size:30px;line-height:1.4;letter-spacing:.14em;color:#fff;margin:0 0 44px}
+#lock button.ub{background:none;border:1px solid #ffffff55;color:#fff;border-radius:999px;padding:11px 28px;font-size:14px;letter-spacing:.08em}
+summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px}
+summary::-webkit-details-marker{display:none}
+details.grp{border-top:1px solid var(--bd);padding:8px 0}
+details.grp:first-child{border-top:0}
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.seg button{flex:1 1 30%;padding:10px 4px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-size:13px}
+.seg button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.tut h4{margin:12px 0 4px}
+.tut p,.tut li{font-size:14px;line-height:1.45}
+.tut ul{padding-left:18px;margin:6px 0}
+/* ===== Tema Padrão: mesmo estilo da tela de bloqueio ===== */
+[data-theme=padrao] body,[data-theme=padrao] button,[data-theme=padrao] input,[data-theme=padrao] select{font-family:var(--fn)}
+[data-theme=padrao] header{background:#000;border-bottom:1px solid #1f1f1f;gap:8px}
+[data-theme=padrao] header h1{font-weight:300;letter-spacing:.07em;font-size:17px}
+[data-theme=padrao] header .hc{width:36px;height:36px;border:1.5px solid #ffffff55;border-radius:50%;padding:0;font-size:17px;font-weight:400;display:flex;align-items:center;justify-content:center;flex:none;line-height:1;color:#fff}
+[data-theme=padrao] header .hc svg{width:19px;height:19px}
+[data-theme=padrao] header .bk{font-size:22px;padding-bottom:3px}
+[data-theme=padrao] .card{border-radius:22px;background:var(--card)}
+[data-theme=padrao] .total{background:#1c1c1c;border:1px solid #333;color:#fff}
+[data-theme=padrao] .total small{color:#a8a8a8}
+[data-theme=padrao] .total .v{font-weight:300;letter-spacing:.02em}
+[data-theme=padrao] .nm span{font-weight:300;letter-spacing:.06em}
+[data-theme=padrao] .big{font-weight:400}
+[data-theme=padrao] .btn{border-radius:28px;background:var(--card)}
+[data-theme=padrao] .add{background:#3a3a3a;color:#fff;border-radius:999px;letter-spacing:.04em}
+[data-theme=padrao] .danger{background:#7a2b2b}
+[data-theme=padrao] .add.cancel{background:transparent;border:1px solid #444;color:#eee}
+[data-theme=padrao] .mini{background:#3a3a3a;border-radius:999px}
+[data-theme=padrao] .mini.alt{background:transparent;border:1px solid #555;color:#eee}
+[data-theme=padrao] .nav{border-radius:999px}
+[data-theme=padrao] .eye{border-radius:999px}
+[data-theme=padrao] .seg button{border-radius:999px}
+[data-theme=padrao] .seg button.on{background:#3a3a3a;border-color:#666}
+[data-theme=padrao] .tag{border-radius:999px}
+[data-theme=padrao] input,[data-theme=padrao] select{border-radius:16px}
+[data-theme=padrao] .sheet{border-radius:0 0 26px 26px}
+</style>
+</head>
+<body>
+<div id="lock">
+  <div class="wm">Minha Vida Financeira</div>
+  <button class="ub" onclick="desbloquear()">Desbloquear</button>
+  <p id="lockmsg" class="warn"></p>
+  <button class="ic" style="font-size:12px;color:#ffffff66;margin-top:26px" onclick="esqueci()">Não consigo desbloquear</button>
+</div>
+<div id="app"></div>
+<div id="modal"></div>
+<script>
+/* ---------- utilitários ---------- */
+const KEY='vidaFinanceira';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function cur(){return today().slice(0,7)}
+const r2=x=>Math.round(x*100)/100;
+const rq=x=>Math.round(x*1e6)/1e6;
+const num=x=>parseFloat(String(x).replace(',','.'))||0;
+const sumv=a=>r2(a.reduce((t,x)=>t+x,0));
+const fmt=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const fdate=d=>d.split('-').reverse().join('/');
+const addM=(ym,i)=>{let [y,m]=ym.split('-').map(Number);m+=i;y+=Math.floor((m-1)/12);m=((m-1)%12)+1;return y+'-'+String(m).padStart(2,'0')};
+const mlabel=ym=>{const [y,m]=ym.split('-');const s=new Date(y,m-1,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'});return s.charAt(0).toUpperCase()+s.slice(1)};
+const opts=(a,f=x=>esc(x.nome))=>a.map(x=>`<option value="${x.id}">${f(x)}</option>`).join('');
+function dataMes(mes,dia){const [y,m]=mes.split('-').map(Number),ult=new Date(y,m,0).getDate();return mes+'-'+String(Math.min(dia,ult)).padStart(2,'0')}
+const catsPadrao=()=>({
+  in:[{id:'ci1',nome:'Ganho comum',rec:false,valor:0},{id:'ci2',nome:'Salário',rec:true,valor:0},{id:'ci3',nome:'Ações',rec:false,valor:0}],
+  out:[{id:'co1',nome:'Mercado',rec:false,valor:0},{id:'co2',nome:'Gasolina',rec:false,valor:0},{id:'co3',nome:'Aluguel',rec:false,valor:0},{id:'co4',nome:'Outros',rec:false,valor:0},{id:'co5',nome:'Ações',rec:false,valor:0}]
+});
+const FLAGS=()=>({acoes:1,divcat:1,divauto:1,tpadrao:1,cartaoDiv:1});
+const DEF=()=>({nome:'',inv:[],contas:[],cartoes:[],dividas:[],dinheiro:0,movs:[],ops:[],transf:[],cats:catsPadrao(),snaps:{},hide:false,tema:'padrao',flags:FLAGS()});
+
+/* ---------- estado + migração ---------- */
+const _st=JSON.parse(localStorage.getItem(KEY)||'null');
+let S=Object.assign(DEF(),_st||{});
+if(_st)S.flags=_st.flags||{};
+S.nome=typeof S.nome==='string'?S.nome:'';
+S.cats=S.cats||catsPadrao();S.cats.in=S.cats.in||[];S.cats.out=S.cats.out||[];
+if(!S.flags.acoes){
+  [['in','ci3'],['out','co5']].forEach(([tp,id])=>{if(!S.cats[tp].some(c=>c.nome==='Ações'))S.cats[tp].push({id,nome:'Ações',rec:false,valor:0})});
+  S.flags.acoes=1;
+}
+S.dividas=S.dividas.map(d=>(d.parcelas||d.kind)?d:{id:d.id,nome:d.nome,tipo:'Outros',inst:'',total:d.valor,n:1,parcelas:[{id:uid(),valor:d.valor,mes:cur(),paga:false}]});
+S.dividas.forEach(d=>{
+  if(!d.kind)d.kind='parc';
+  if(d.kind==='parc'&&!d.cartao&&d.inst&&d.tipo==='Cartão de crédito'){
+    let c=S.cartoes.find(x=>x.nome===d.inst);
+    if(!c){c={id:uid(),nome:d.inst};S.cartoes.push(c)}
+    d.cartao=c.id;
+  }
+});
+S.movs.forEach(m=>{
+  if(m.pg&&!m.pgs){m.pgs=[m.pg];delete m.pg}
+  if(m.debt&&!m.cartaoId){const d=S.dividas.find(x=>x.id===m.debt);if(d&&d.cartao)m.cartaoId=d.cartao}
+  if(m.cat==='Ganho/perda em ações')m.cat='Ações';
+  if(!m.cat)m.cat=m.rend?'Rendimento de investimento':m.auto?'Ações':m.pgs?'Pagamento de dívidas':m.tipo==='in'?'Ganho comum':'Outros';
+});
+/* toda dívida tem uma categoria de saída (usada quando ela é paga) */
+S.dividas.forEach(d=>{
+  if(!d.cat){
+    const m=S.movs.find(x=>x.debt===d.id);
+    d.cat=(m&&m.cat&&m.cat!=='Pagamento de dívidas')?m.cat:'Outros';
+  }
+});
+if(!S.flags.divcat){
+  S.movs.forEach(m=>{
+    if(m.pgs&&m.pgs.length&&m.cat==='Pagamento de dívidas'){
+      const cs=[...new Set(m.pgs.map(p=>{const d=S.dividas.find(x=>x.id===p.d);return d?d.cat:null}))];
+      if(cs.length===1&&cs[0])m.cat=cs[0];
+    }
+  });
+  S.flags.divcat=1;
+}
+const brl=v=>S.hide?'R$ ••••':fmt(v);
+const find=(k,id)=>S[k].find(x=>x.id===id);
+const V=x=>x.tipo==='Ações'?r2(x.preco*x.qtd):x.valor;
+/* total de movimentações: ignora lançamentos futuros */
+const totMov=ms=>sumv(ms.filter(m=>!m.pend).map(m=>m.valor));
+const fut=m=>!m.sem&&m.data>today();
+
+/* Saída no futuro não existe: vira dívida. Débitos futuros e categorias de saída recorrentes antigos são convertidos. */
+if(!S.flags.divauto){
+  S.movs.filter(m=>m.tipo==='out'&&m.pend).forEach(m=>{
+    const conta=(m.meio==='conta'&&find('contas',m.ref))?m.ref:null;
+    S.dividas.push({id:uid(),nome:m.desc,tipo:'Outros',cat:m.cat||'Outros',cartao:null,venc:parseInt(m.data.slice(8,10)),
+      kind:'parc',total:m.valor,n:1,parcelas:[{id:uid(),valor:m.valor,mes:m.data.slice(0,7),paga:false}],
+      auto:!!conta,autoConta:conta,autoDesde:m.data});
+  });
+  S.movs=S.movs.filter(m=>!(m.tipo==='out'&&m.pend));
+  S.cats.out.forEach(c=>{
+    if(c.rec&&c.valor>0&&c.dia&&c.dest&&c.ini){
+      let mi=c.ini;while(c.gen&&c.gen[mi])mi=addM(mi,1);
+      const dest=String(c.dest),conta=(dest.indexOf('c:')===0&&find('contas',dest.slice(2)))?dest.slice(2):null;
+      S.dividas.push({id:uid(),nome:c.nome,tipo:'Outros',cat:c.nome,cartao:null,venc:c.dia,kind:'assin',valor:c.valor,inicio:mi,fim:null,pagos:{},
+        auto:!!conta,autoConta:conta,autoDesde:dataMes(mi,c.dia)});
+    }
+    c.rec=false;delete c.ini;delete c.gen;delete c.dia;delete c.dest;
+  });
+  S.flags.divauto=1;
+}
+/* o app passa a iniciar no Tema Padrão (uma única vez; depois vale a escolha do usuário) */
+if(!S.flags.tpadrao){S.tema='padrao';S.flags.tpadrao=1}
+/* compra no cartão não é saída: os antigos registros dela em Saídas saem da lista (a dívida continua no cartão) */
+if(!S.flags.cartaoDiv){S.movs=S.movs.filter(m=>!(m.debt&&m.sem));S.flags.cartaoDiv=1}
+
+/* executa uma alteração e desfaz tudo se algo falhar */
+function tx(fn){
+  const bak=JSON.stringify(S);let ok=false;
+  try{ok=fn()}catch(e){ok=false;console.error(e)}
+  if(!ok)S=JSON.parse(bak);
+  return ok;
+}
+
+/* fotos mensais dos saldos (para os relatórios de meses anteriores) */
+function buildSnap(){return{contas:S.contas.map(c=>({n:c.nome,v:c.valor})),inv:S.inv.map(i=>({n:i.nome,t:i.tipo,v:V(i),q:i.qtd})),din:S.dinheiro}}
+function snap(){
+  S.snaps=S.snaps||{};
+  const m=cur(),ks=Object.keys(S.snaps).sort(),last=ks[ks.length-1];
+  if(last&&last<m)for(let k=addM(last,1);k<m;k=addM(k,1)){const c=JSON.parse(JSON.stringify(S.snaps[last]));c.est=1;S.snaps[k]=c}
+  S.snaps[m]=buildSnap();
+}
+const snapDe=mes=>mes===cur()?buildSnap():(S.snaps[mes]||null);
+const save=()=>{snap();localStorage.setItem(KEY,JSON.stringify(S))};
+
+/* ---------- temas ---------- */
+const TN={padrao:'Padrão',dark:'Escuro',light:'Claro'};
+const TCOR={padrao:'#000000',dark:'#0b2f2b',light:'#0f766e'};
+function applyTema(){if(!TCOR[S.tema])S.tema='padrao';document.documentElement.dataset.theme=S.tema;$('tc').content=TCOR[S.tema]}
+function setTema(t){S.tema=t;save();applyTema();render()}
+function toggleHide(){S.hide=!S.hide;save();render()}
+
+/* ---------- nome do usuário ---------- */
+function salvaNome(){
+  const el=$('nm');if(!el)return;
+  const v=el.value.trim();
+  if(!v){el.focus();return}
+  S.nome=v.slice(0,40);save();render();
+}
+function editaNome(){
+  const v=prompt('Seu nome:',S.nome);
+  if(v===null)return;
+  S.nome=v.trim().slice(0,40);save();render();
+}
+/* nome do arquivo de backup: nome-mês-ano.json (sem acentos nem espaços) */
+function slug(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')}
+function nomeBackup(){const t=today();return (slug(S.nome)||'backup')+'-'+t.slice(5,7)+'-'+t.slice(0,4)+'.json'}
+
+const PARENT={inv:'home',contas:'home',dividas:'home',dinheiro:'home',mov:'home',config:'home',entradas:'mov',saidas:'mov',cartao:'dividas'};
+let route='home',ret='home',mesH=cur(),mesV=cur(),tabH='res',preset=null,cartaoAtual=null,PG=null;
+let editId=null,editTp='in',editMode='',OPEDIT=null,TEDIT=null;
+const go=r=>{route=r;if(r==='home')mesV=cur();render();scrollTo(0,0)};
+function back(){
+  if(route==='hist'||route==='tutorial')return go(ret);
+  if(route==='editmov')return go(editTp==='in'?'entradas':'saidas');
+  go(PARENT[route]);
+}
+function abreEspecial(r){if(route!=='hist'&&route!=='tutorial')ret=route;go(r)}
+const openModal=h=>{$('modal').innerHTML=`<div class="ov" onclick="if(event.target===this)closeModal()"><div class="sheet">${h}</div></div>`};
+const closeModal=()=>{$('modal').innerHTML=''};
+/* botão Relatórios: último botão de cada tela */
+const btnCons=h=>`<button class="btn"${h?'':' style="margin-top:14px"'} onclick="abreEspecial('hist')"><span>📊 Relatórios</span><span>›</span></button>`;
+
+/* ---------- efeito de lançamentos nos saldos ---------- */
+function efeito(m,s){
+  if(m.sem||m.meio==='cartao')return;
+  const v=m.valor*s;
+  if(m.rend){const i=find('inv',m.rend);if(i)i.valor=r2(i.valor+v);return}
+  const x=m.tipo==='in'?v:-v;
+  if(m.meio==='dinheiro')S.dinheiro=r2(S.dinheiro+x);
+  else{const c=find('contas',m.ref);if(c)c.valor=r2(c.valor+x)}
+}
+
+/* ---------- vencimento, fechamento e fatura ---------- */
+function vDia(d){const c=d.cartao?find('cartoes',d.cartao):null;return c?c.venc:d.venc}
+function vData(mes,dia){
+  if(!dia)return '';
+  const [y,m]=mes.split('-').map(Number),ult=new Date(y,m,0).getDate();
+  return String(Math.min(dia,ult)).padStart(2,'0')+'/'+String(m).padStart(2,'0');
+}
+function lerDia(v){const n=parseInt(v);return(n>=1&&n<=31)?n:0}
+/* Em qual fatura (mês de vencimento) entra uma compra feita em "data".
+   Com fechamento: compra até o dia do fechamento entra na fatura que fecha neste mês;
+   depois do fechamento, na que fecha no mês seguinte.
+   Se o vencimento é depois do fechamento (ex.: fecha 5, vence 15), a fatura vence no mesmo mês em que fecha;
+   senão (ex.: fecha 27, vence 5), vence no mês seguinte ao fechamento.
+   Cartões antigos sem fechamento definido usam a regra anterior. */
+function mesFatura(data,card){
+  const mes=data.slice(0,7),d=parseInt(data.slice(8,10));
+  const venc=card&&card.venc,fech=card&&card.fech;
+  if(fech&&venc){
+    const fm=d<=fech?mes:addM(mes,1);
+    return venc>fech?fm:addM(fm,1);
+  }
+  return(d>=27||(venc&&d>venc))?addM(mes,1):mes;
+}
+function textoFatura(data,card){
+  if(!data||!card)return '';
+  const m=mesFatura(data,card);
+  return 'Entra na fatura de '+mlabel(m)+(card.venc?' (vence '+vData(m,card.venc)+')':'');
+}
+
+/* ---------- dívidas: itens mensais (parcelas e assinaturas) ---------- */
+const ativa=d=>d.kind==='assin'&&(!d.fim||d.fim>=cur());
+const ateM=m=>m>cur()?m:cur();
+function itens(filtro=()=>true,ate=cur()){
+  const out=[];
+  S.dividas.filter(filtro).forEach(d=>{
+    if(d.kind==='assin'){
+      const fim=d.fim&&d.fim<ate?d.fim:ate;
+      for(let m=d.inicio;m<=fim;m=addM(m,1))out.push({d,pid:m,mes:m,valor:d.valor,paga:!!d.pagos[m]});
+    }else d.parcelas.forEach((p,i)=>out.push({d,pid:p.id,mes:p.mes,valor:p.valor,paga:p.paga,i}));
+  });
+  return out;
+}
+/* data de vencimento de uma cobrança (null se a dívida não tem dia de vencimento) */
+function dueOf(d,mes){const dia=vDia(d);return dia?dataMes(mes,dia):null}
+/* cobrança em atraso: passou do vencimento e não foi paga */
+function atrasada(x){
+  if(x.paga)return false;
+  const du=dueOf(x.d,x.mes);
+  return du?du<today():x.mes<cur();
+}
+function resumo(filtro){
+  const rest=itens(filtro).filter(x=>!x.paga),as=S.dividas.filter(filtro).filter(ativa),atr=rest.filter(atrasada);
+  return{total:sumv(rest.map(x=>x.valor)),nParc:rest.filter(x=>x.d.kind==='parc').length,
+    compras:sumv(rest.filter(x=>x.d.kind==='parc').map(x=>x.valor)),
+    mes:sumv(rest.filter(x=>x.mes<=cur()).map(x=>x.valor)),nAss:as.length,ass:sumv(as.map(d=>d.valor)),
+    atraso:sumv(atr.map(x=>x.valor)),nAtr:atr.length};
+}
+/* resumo de um mês específico (pagas + abertas) */
+function resMes(filtro,mes){
+  const its=itens(filtro,ateM(mes)).filter(x=>x.mes===mes),ab=its.filter(x=>!x.paga);
+  return{total:sumv(its.map(x=>x.valor)),aberto:sumv(ab.map(x=>x.valor)),n:its.length,nAb:ab.length};
+}
+function totais(){
+  const r=resumo(()=>true);
+  return{inv:sumv(S.inv.map(V)),contas:sumv(S.contas.map(x=>x.valor)),din:S.dinheiro,div:r.total,compras:r.compras,nRest:r.nParc,mes:r.mes,nAss:r.nAss,ass:r.ass,atraso:r.atraso};
+}
+
+/* ---------- cabeçalho (olho = mostrar/esconder valores, em todas as telas com valores) ---------- */
+const NOEYE=['config','tutorial','mov','editmov'];
+const ICO={
+  eye:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`,
+  eyeoff:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`,
+  gear:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`
+};
+const head=(t,extra='')=>{
+  const eye=NOEYE.includes(route)?'':`<button class="hi hc" onclick="toggleHide()" aria-label="${S.hide?'Mostrar valores':'Esconder valores'}">${S.hide?ICO.eyeoff:ICO.eye}</button>`;
+  return `<header>${route!=='home'?'<button class="hc bk" onclick="back()" aria-label="Voltar">‹</button>':''}<h1>${t}</h1>${eye}${extra}<button class="hb hc" onclick="ajuda('${route}')" aria-label="Ajuda">?</button></header>`;
+};
+
+/* navegação entre meses (telas de dívidas) */
+function mudaMes(i){mesV=addM(mesV,i);render()}
+function setMes(v){if(v){mesV=v;render()}}
+function irHoje(){mesV=cur();render()}
+const navMes=()=>`<div class="row" style="margin-bottom:8px"><button class="mini nav" onclick="mudaMes(-1)">‹</button>
+<input type="month" value="${mesV}" onchange="setMes(this.value)" style="text-align:center;margin:0"><button class="mini nav" onclick="mudaMes(1)">›</button></div>
+${mesV!==cur()?'<div style="margin-bottom:10px"><button class="mini alt" onclick="irHoje()">Voltar ao mês atual</button></div>':''}`;
+
+/* ---------- tipos de investimento ---------- */
+const TIPOS=['Poupança','Ações','Títulos','Fundos','Cripto','Outros'];
+function grupoTipos(list,kf=x=>x.tipo){
+  const ts=[...new Set([...TIPOS,...list.map(kf)])];
+  return ts.filter(t=>list.some(x=>kf(x)===t)).map(t=>({t,l:list.filter(x=>kf(x)===t)}));
+}
+
+/* ---------- AJUDA / TUTORIAL ---------- */
+const HELP={
+basico:{t:'Primeiros passos',h:`<p>Uma sugestão de ordem para começar:</p><ul>
+<li><b>Seu nome:</b> na tela inicial, digite seu nome no campo "Adicione seu nome" e toque em Salvar. Ele também dá nome ao arquivo de backup.</li>
+<li><b>Contas e dinheiro:</b> cadastre suas contas bancárias com o saldo de hoje e ajuste o Dinheiro (em espécie).</li>
+<li><b>Investimentos:</b> cadastre o que você já possui em Reservas/Investimentos.</li>
+<li><b>Cartões e dívidas:</b> cadastre cada cartão (com vencimento e fechamento da fatura) e as dívidas que você já tem, como financiamentos e aluguel.</li>
+<li><b>Dia a dia:</b> registre em Entradas o que você recebe e em Saídas o que você já pagou.</li>
+<li><b>Proteção:</b> em ⚙ ative o Bloqueio e faça o Backup com frequência.</li></ul>
+<h4>Como o app pensa</h4><ul>
+<li><b>Saída</b> é dinheiro que já saiu da sua conta ou da sua carteira. Só ela diminui o patrimônio.</li>
+<li><b>Dívida</b> é tudo o que ainda vai ser pago: compra no cartão, parcela, aluguel, conta a vencer. Ela vira Saída quando é paga.</li>
+<li><b>Patrimônio</b> = Reservas/Investimentos + Contas bancárias + Dinheiro. Uma dívida em aberto não é descontada dele.</li>
+<li><b>Seus dados ficam só neste aparelho.</b> Se você limpar os dados do navegador, desinstalar o app ou trocar de celular, só o backup recupera tudo.</li></ul>`},
+home:{t:'Tela inicial',h:`<p>É o painel geral das suas finanças.</p><ul>
+<li><b>Seu nome:</b> aparece no alto da tela. Se você ainda não cadastrou, digite no campo "Adicione seu nome" e toque em Salvar. Para trocar, toque no ✎ ao lado do nome. O nome também é usado no nome do arquivo de backup. Se você importar um backup que não tem nome, ou usar "Apagar tudo", o campo volta a aparecer.</li>
+<li><b>Patrimônio Total:</b> soma de Reservas/Investimentos + Contas bancárias + Dinheiro. As dívidas só diminuem o patrimônio quando você as <b>paga</b> (o dinheiro sai de uma conta ou do dinheiro em espécie).</li>
+<li><b>Olho (no topo):</b> esconde ou mostra os valores. Ele aparece em todas as telas que mostram valores e vale para o app inteiro.</li>
+<li><b>Dívidas:</b> o valor grande é o que vence <b>neste mês</b> (inclui o que está em atraso). Abaixo aparecem o total em compras (todas as parcelas ainda em aberto), os <b>recorrentes</b> (assinaturas e dívidas que se repetem todo mês) e, em vermelho, o que está <b>Em atraso</b>.</li>
+<li>Toque em qualquer linha para abrir a tela correspondente.</li>
+<li><b>Engrenagem (no topo):</b> abre as Configurações. O botão <b>📊 Relatórios</b>, no fim de cada tela, abre os relatórios.</li>
+<li>O <b>?</b> no canto de cada tela mostra a ajuda daquela tela.</li></ul>`},
+inv:{t:'Reservas/Investimentos',h:`<p>Seus investimentos aparecem separados por tipo, com o total de cada tipo.</p><ul>
+<li><b>⇄ Investir / Resgatar:</b> move dinheiro entre uma conta bancária e um investimento. Ao investir, escolha <b>➕ Novo investimento…</b> para criar um que ainda não existe.</li>
+<li><b>Ações:</b> informe preço unitário e quantidade; o app calcula o total e o preço médio. Ao resgatar, o ganho ou a perda é lançado automaticamente em Entradas ou Saídas, na categoria <b>Ações</b>.</li>
+<li><b>+ Rendimento:</b> registra o rendimento (ex.: poupança) como entrada e soma ao investimento.</li>
+<li><b>✎</b> em cada investimento edita nome, valor (ou cotação, quantidade e preço médio). <b>🗑</b> remove o item.</li>
+<li>Em <b>Adicionar investimento</b> você cadastra o que já possui, sem mexer em nenhuma conta.</li>
+<li>Em <b>Últimas operações</b>, cada investimento ou resgate tem <b>✎</b> (editar) e <b>🗑</b> (desfazer). Ao editar ou desfazer, os saldos da conta e do investimento são revertidos. Para ações: se parte das ações de uma compra já foi vendida, desfaça antes os resgates posteriores.</li></ul>`},
+contas:{t:'Contas bancárias',h:`<p>Cadastre cada conta com o saldo atual.</p><ul>
+<li>Os saldos mudam sozinhos quando você registra entradas, saídas, pagamentos, investimentos e transferências.</li>
+<li><b>⇄ Transferir / Sacar:</b> move dinheiro entre contas, ou da conta para o Dinheiro (em espécie). Não conta como entrada nem saída.</li>
+<li><b>✎</b> edita nome e saldo da conta. <b>🗑</b> remove a conta.</li>
+<li>Em <b>Últimas transferências e saques</b>, cada item tem <b>✎</b> (editar tudo) e <b>🗑</b> (desfazer e reverter os saldos).</li></ul>`},
+dinheiro:{t:'Dinheiro (em espécie)',h:`<p>Mostra quanto você tem em dinheiro vivo.</p><ul>
+<li>O saldo muda quando você registra entradas, saídas ou pagamentos em dinheiro, e quando faz um saque de uma conta.</li>
+<li><b>Ajustar saldo manualmente</b> serve para corrigir diferenças.</li></ul>`},
+dividas:{t:'Dívidas',h:`<p>Tudo o que você deve ou vai pagar no futuro fica aqui: compras no cartão, financiamentos, empréstimos, assinaturas, aluguel, contas a vencer.</p><ul>
+<li>Use as setas <b>‹ ›</b> no topo para ver outros meses. Cada dívida mostra a cobrança do mês (ou a próxima, se não houver nenhuma vencendo).</li>
+<li><b>Saída no futuro é dívida.</b> Para um compromisso que ainda vai acontecer, cadastre uma dívida em <b>Outras dívidas</b> (parcelada, ou <b>recorrente</b> se repete todo mês, como o aluguel). Ela só vira <b>Saída</b> e só abate das contas quando é <b>paga</b>.</li>
+<li><b>Compra no cartão também é dívida:</b> o dinheiro ainda não saiu. Cadastre a compra dentro do cartão (toque no cartão e use <b>Adicionar compra / assinatura</b>). Ela vira saída quando a fatura é paga.</li>
+<li><b>Débito automático:</b> marque a caixa na dívida (ou no cartão, para a fatura) e escolha a conta. A partir do dia em que você marca, o app paga sozinho no dia do vencimento: debita da conta e registra a saída nesse dia. Cobranças com vencimento anterior ficam em atraso, para você pagar. Se a conta não tiver saldo, ela fica negativa.</li>
+<li><b>Sem débito automático:</b> você paga pelo botão <b>PAGAR</b> (na dívida ou no cartão). O app abate o saldo, marca como paga e registra a saída.</li>
+<li><b>Em atraso:</b> aparece quando o vencimento passou e a cobrança não foi paga.</li>
+<li><b>Categoria de saída:</b> toda dívida tem uma. Quando é paga, o pagamento entra nos relatórios de Saídas nessa categoria. Use <b>➕ Nova categoria</b> ao cadastrar para criar uma na hora.</li>
+<li><b>Cartões de crédito:</b> cadastre com vencimento, fechamento e, se quiser, débito automático da fatura. Toque no cartão para ver a fatura.</li>
+<li><b>✎</b> edita tudo (nome, categoria, valor, parcelas, vencimento, débito automático). Se já houver parcelas pagas, só nome, categoria, tipo, vencimento e débito automático mudam. <b>↩ desfazer</b> reverte um pagamento (e o débito automático não é refeito para ele).</li>
+<li><b>Assinaturas</b> e dívidas recorrentes cobram todo mês até você cancelar. Use <b>Cancelar</b> para informar o último mês cobrado, e <b>Reativar</b> para voltar atrás.</li></ul>`},
+cartao:{t:'Cartão de crédito',h:`<p>Fatura do cartão, mês a mês.</p><ul>
+<li>Mostra a fatura do mês escolhido nas setas <b>‹ ›</b>. Faturas em atraso aparecem à parte.</li>
+<li><b>Adicionar compra / assinatura</b> fica logo abaixo da fatura, antes da lista de compras. Compra no cartão é dívida: ainda não saiu dinheiro, então só vira saída quando a fatura é paga.</li>
+<li>Cada compra entra na fatura conforme o <b>fechamento</b>: compras até o dia do fechamento entram na fatura que fecha naquele mês; compras depois vão para a fatura do mês seguinte. Se o vencimento é antes do fechamento (ex.: fecha dia 27, vence dia 5), a fatura vence no mês seguinte ao do fechamento. O app mostra um aviso antes de salvar.</li>
+<li>Cada compra ou assinatura tem uma <b>categoria de saída</b> (com <b>➕ Nova categoria</b> ao cadastrar). Ao pagar, o pagamento entra nessa categoria. Se a fatura tiver categorias diferentes, o pagamento é dividido por categoria.</li>
+<li><b>Débito automático da fatura:</b> configurado em <b>✎ Editar</b>. No dia do vencimento o app paga a fatura inteira da conta escolhida. Sem ele, use <b>PAGAR</b> ou <b>Pagar fatura inteira</b>.</li>
+<li>O <b>↩ desfazer</b> reverte o pagamento.</li>
+<li>Em <b>Compras e assinaturas</b> você edita (✎), cancela ou remove cada item.</li>
+<li>A lixeira no topo remove o cartão e todas as suas compras e assinaturas.</li></ul>`},
+mov:{t:'Movimentação financeira',h:`<p>Aqui você registra o dia a dia.</p><ul>
+<li><b>Entradas:</b> salário, ganhos, rendimentos.</li>
+<li><b>Saídas:</b> só gastos e pagamentos que já aconteceram. Compromissos futuros e compras no cartão ficam em Dívidas.</li>
+<li><b>Relatórios:</b> relatórios de qualquer mês, com gráficos.</li>
+<li>Tudo o que você registra atualiza contas, dinheiro, dívidas e a tela inicial.</li></ul>`},
+entradas:{t:'Entradas',h:`<p>Registre tudo o que entra.</p><ul>
+<li>Escolha a <b>categoria</b> (Ganho comum, Salário, Ações…). Em <b>➕ Nova categoria</b> você cria, edita (✎) ou remove categorias.</li>
+<li><b>Recorrente 🔁 (ex.: Salário):</b> na categoria, informe o valor, o dia do mês e onde o dinheiro entra (conta, dinheiro ou investimento). O app lança <b>sozinho na data</b> e atualiza o saldo. Antes da data, o registro aparece como <b>Lançamento futuro</b>. Se o dia deste mês já passou quando você configurar, o primeiro lançamento é no mês seguinte. Enquanto a categoria não estiver configurada, aparece um aviso amarelo.</li>
+<li><b>Ganhos futuros:</b> escolha uma data futura ao registrar. Fica como lançamento futuro e só entra nos saldos nessa data. O total do mês soma só o que já foi realizado; o resto aparece como "A receber".</li>
+<li><b>Onde entra:</b> Dinheiro, Conta bancária ou Investimento (poupança etc.). A categoria <b>Rendimento de investimento</b> soma direto no investimento escolhido.</li>
+<li>A categoria <b>Ações</b> recebe automaticamente os ganhos das vendas de ações com lucro. É só informativo: o valor da venda já entrou na conta.</li>
+<li>A descrição é opcional. Se ficar em branco, vale o nome da categoria.</li>
+<li><b>✎</b> edita qualquer dado do registro (valor, data, categoria, destino). <b>🗑</b> exclui e reverte o saldo.</li></ul>`},
+saidas:{t:'Saídas',h:`<p>Registre o que você já pagou ou gastou.</p><ul>
+<li>Escolha a <b>categoria</b> (Mercado, Gasolina, Aluguel, Ações…). Em <b>➕ Nova categoria</b> você cria, edita (✎) ou remove categorias.</li>
+<li>Escolha como pagou: <b>Dinheiro</b> ou <b>Conta bancária</b>. O saldo é debitado na hora.</li>
+<li><b>Não existe saída no futuro nem compra no cartão aqui.</b> Compra no cartão ainda não tirou dinheiro do seu patrimônio, e compromissos futuros ainda não aconteceram. Registre-os em <b>Dívidas</b>; eles viram saída quando pagos.</li>
+<li>Se você tentar registrar uma saída com data futura, o app avisa para registrar como <b>Dívida</b>.</li>
+<li>Os pagamentos de dívidas (manuais ou por débito automático) também aparecem aqui, na categoria da dívida.</li>
+<li>A categoria <b>Ações</b> recebe automaticamente as perdas das vendas de ações. É só informativo: o valor da venda já entrou na conta.</li>
+<li>A descrição é opcional. Se ficar em branco, vale o nome da categoria.</li>
+<li><b>✎</b> edita qualquer dado do registro. <b>🗑</b> exclui e reverte o saldo.</li></ul>`},
+editmov:{t:'Editar registro',h:`<p>Altere o que precisar e toque em <b>Salvar alterações</b>. Os saldos são recalculados automaticamente.</p><ul>
+<li>Você pode mudar categoria, descrição, valor, data e onde o dinheiro entrou ou saiu.</li>
+<li><b>Pagamentos de dívidas</b> não permitem mudar o valor (ele vem das cobranças pagas), mas dá para mudar descrição, categoria, data e a conta usada. Excluir um pagamento aqui equivale a usar o <b>↩ desfazer</b> em Dívidas: a cobrança volta a ficar em aberto.</li>
+<li><b>Ganho ou perda de ações</b> é um registro informativo: dá para ajustar descrição, categoria, valor e data, sem mexer em nenhum saldo.</li>
+<li>Entradas com data futura viram lançamento futuro. Saídas não podem ter data futura: use Dívidas.</li></ul>`},
+hist:{t:'Relatórios',h:`<p>Veja e exporte relatórios de qualquer mês, com gráficos.</p><ul>
+<li>Escolha o mês nas setas <b>‹ ›</b> ou no campo de data. Os gráficos e as listas acompanham o mês escolhido.</li>
+<li><b>Resumo:</b> total de entradas, saídas e saldo do mês, com os totais por categoria (sem gráfico).</li>
+<li><b>Entradas</b> e <b>Saídas:</b> gráfico de pizza por categoria e, abaixo, todos os lançamentos do mês divididos por categoria. Toque numa categoria para ver os lançamentos. Os pagamentos de dívidas aparecem na categoria de saída de cada dívida.</li>
+<li><b>Dívidas/cartões:</b> gráfico de pizza com o peso de cada cartão e de cada dívida nas cobranças do mês, e a lista com o que está pago, em aberto e em atraso, mais os pagamentos efetuados (inclusive por débito automático).</li>
+<li><b>Contas:</b> gráfico de pizza com o saldo de cada conta e do dinheiro em espécie, e as movimentações do mês (entradas, saídas, pagamentos, transferências, saques, aplicações e resgates).</li>
+<li><b>Investimentos:</b> gráfico de pizza por tipo de investimento, posição no fim do mês, aplicações, resgates e rendimentos.</li>
+<li><b>Patrimônio:</b> gráfico de pizza (contas, dinheiro e investimentos) e gráfico de barras com a evolução do patrimônio nos últimos meses. A barra verde é o mês escolhido.</li>
+<li>Valores negativos (por exemplo, uma conta no vermelho) não entram nos gráficos de pizza. Com o olho ativado, os valores ficam escondidos também nos gráficos.</li>
+<li><b>Exportar:</b> gera um arquivo HTML com os gráficos e as listas, que abre em qualquer navegador e pode ser guardado no Google Drive.</li>
+<li>Os saldos de meses anteriores só existem a partir da primeira vez que o app foi aberto com a versão que guarda o histórico. A situação "paga/em aberto" das dívidas é sempre a atual.</li></ul>`},
+config:{t:'Configurações',h:`<ul>
+<li><b>Tutorial:</b> abre o guia completo do app.</li>
+<li><b>Tema:</b> o app inicia no Tema Padrão (preto e cinza, de letras elegantes). Você pode mudar para o Tema Escuro ou o Tema Claro e voltar ao Padrão quando quiser.</li>
+<li><b>Bloqueio:</b> pede a senha, o padrão ou a biometria do celular ao abrir o app. Você escolhe quando bloquear (ao sair do app, ou após 1, 5 ou 15 minutos) e pode bloquear na hora. Precisa do app aberto pelo link https e de senha ou biometria configurada no celular. Se você perder o acesso, "Não consigo desbloquear" apaga os dados do app, então mantenha um backup.</li>
+<li><b>Backup – Exportar dados:</b> gera o arquivo <b>nome-mês-ano.json</b>, com o nome cadastrado na tela inicial e o mês e o ano atuais (ex.: maria-10-2026.json). Sem nome cadastrado, o arquivo se chama backup-mês-ano.json. Guarde-o em lugar seguro, como o Google Drive: ele contém todos os seus dados.</li>
+<li><b>Backup – Importar backup:</b> substitui todos os dados atuais pelos do arquivo escolhido. Use para trocar de celular ou recuperar seus dados. Se o backup não tiver nome (versões antigas do app), a tela inicial pede o nome de novo.</li>
+<li><b>Apagar tudo:</b> remove todos os dados (nome, contas, cartões, dívidas, investimentos, dinheiro e registros). Só o tema é mantido, e a tela inicial volta a pedir o nome. Não dá para desfazer.</li></ul>`},
+tutorial:{t:'Tutorial',h:`<p>Este é o guia completo do app, com um tópico para cada tela.</p>`}
+};
+function ajuda(k){
+  const h=HELP[k]||HELP.home;
+  openModal(`<div class="row"><h3 style="margin:0">❓ ${h.t}</h3><button class="ic" onclick="closeModal()">✕</button></div>
+  <div class="tut">${h.h}</div>
+  <button class="add" onclick="closeModal()">Entendi</button>
+  ${k!=='tutorial'?`<button class="add cancel" onclick="closeModal();abreEspecial('tutorial')">Ver tutorial completo</button>`:''}`);
+}
+
+/* ---------- telas ---------- */
+const screens={
+home(){
+  const t=totais();
+  /* Patrimônio NÃO desconta dívidas: só cai quando você paga (saída de conta/dinheiro) */
+  const pat=t.inv+t.contas+t.din;
+  const b=(ic,l,v,sub,r,cls='')=>`<button class="btn" onclick="go('${r}')"><span>${ic} ${l}${sub?`<br><small>${sub}</small>`:''}</span><b class="${cls}">${v}</b></button>`;
+  let subDiv=`Total em compras: ${brl(t.compras)}`;
+  if(t.nAss)subDiv+=`<br>${t.nAss} recorrente${t.nAss>1?'s':''}: ${brl(t.ass)}/mês`;
+  if(t.atraso>0)subDiv+=`<br><span class="neg">Em atraso: ${brl(t.atraso)}</span>`;
+  const nomeBox=S.nome
+    ?`<div class="nm"><span>${esc(S.nome)}</span><button class="ic" onclick="editaNome()" aria-label="Editar nome">✎</button></div>`
+    :`<div class="card"><input id="nm" placeholder="Seu nome" maxlength="40" autocomplete="given-name" onkeydown="if(event.key==='Enter')salvaNome()">
+  <div class="row"><small>Adicione seu nome</small><button class="mini" onclick="salvaNome()">Salvar</button></div></div>`;
+  return head('Minha Vida Financeira',`<button class="hi hc" onclick="go('config')" aria-label="Configurações">${ICO.gear}</button>`)+`<div class="pad">
+  ${nomeBox}
+  <div class="card total"><small id="dt"></small>
+  <div><small>Patrimônio Total</small></div>
+  <div class="v">${brl(pat)}</div>
+  <small>A maior árvore nasce de um pequeno broto.</small></div>
+  ${b('📈','Reservas/Investimentos',brl(t.inv),'','inv')}
+  ${b('🏦','Contas bancárias',brl(t.contas),'','contas')}
+  ${b('💵','Dinheiro (em espécie)',brl(t.din),'','dinheiro')}
+  <button class="btn" onclick="go('dividas')"><span>💳 Dívidas · a pagar este mês<br><small>${subDiv}</small></span><b class="neg big">${brl(t.mes)}</b></button>
+  ${b('🔄','Movimentação financeira','›','','mov')}
+  ${btnCons(1)}</div>`;
+},
+inv:()=>telaInv(),
+contas(){
+  const it=S.contas.map(x=>`<div class="card row"><b>${esc(x.nome)}</b><div style="white-space:nowrap"><b>${brl(x.valor)}</b>
+  <button class="ic" onclick="editaConta('${x.id}')">✎</button><button class="ic" onclick="delItem('contas','${x.id}')">🗑</button></div></div>`).join('')||'<p class="sub">Nada cadastrado ainda.</p>';
+  const nc=(id,fb)=>{const c=find('contas',id);return c?c.nome:fb};
+  const tr=S.transf.slice(-15).reverse().map(t=>`<div class="card row"><div><b>${t.tipo==='sq'?'💵 Saque':'⇄ Transferência'}</b><br>
+    <small>${fdate(t.data)} · ${esc(nc(t.de,t.deNome))} → ${t.tipo==='sq'?'Dinheiro':esc(nc(t.para,t.paraNome))}</small></div>
+    <div style="white-space:nowrap"><b>${brl(t.valor)}</b><button class="ic" onclick="opTransf('${t.id}')">✎</button><button class="ic" onclick="delTransf('${t.id}')">🗑</button></div></div>`).join('');
+  return head('Contas bancárias')+`<div class="pad"><div class="card total"><small>Total</small><div class="v" style="font-size:24px">${brl(sumv(S.contas.map(x=>x.valor)))}</div></div>
+  <button class="add" style="margin-bottom:12px" onclick="opTransf()">⇄ Transferir / Sacar</button>${it}
+  <h3>Adicionar</h3><div class="card"><input id="n" placeholder="Ex.: Nubank">
+  <input id="v" type="number" step="0.01" inputmode="decimal" placeholder="Saldo atual">
+  <button class="add" onclick="addConta()">Adicionar</button></div>
+  ${tr?'<h3>Últimas transferências e saques</h3>'+tr:''}${btnCons()}</div>`;
+},
+dividas:()=>telaDiv(),
+cartao:()=>telaCartao(),
+dinheiro(){
+  return head('Dinheiro (em espécie)')+`<div class="pad"><div class="card"><small>Saldo atual</small><div style="font-size:28px;font-weight:700">${brl(S.dinheiro)}</div></div>
+  <button class="add" onclick="ajustaDinheiro()">Ajustar saldo manualmente</button>
+  <p class="sub">Entradas, saídas, pagamentos e saques de contas em dinheiro atualizam este valor automaticamente.</p>${btnCons()}</div>`;
+},
+mov(){
+  return head('Movimentação financeira')+`<div class="pad">
+  <button class="btn" onclick="go('entradas')"><span>⬆️ Entradas</span><span>›</span></button>
+  <button class="btn" onclick="go('saidas')"><span>⬇️ Saídas</span><span>›</span></button>
+  ${btnCons(1)}</div>`;
+},
+entradas:()=>telaMov('in'),saidas:()=>telaMov('out'),
+editmov(){
+  const m=find('movs',editId);
+  if(!m){route=editTp==='in'?'entradas':'saidas';return screens[route]()}
+  editMode=modoEdit(m);
+  const notas={
+    pag:'Este é um pagamento de dívida. O valor não pode ser alterado aqui (ele vem das cobranças pagas), mas você pode ajustar descrição, categoria, data e a conta usada.',
+    info:'Registro automático de ganho ou perda em ações. É só informativo: o valor da venda já entrou na conta.',
+    full:''};
+  return head('Editar '+(m.tipo==='in'?'entrada':'saída'))+`<div class="pad">
+  ${notas[editMode]?`<div class="card"><small class="warn">${notas[editMode]}</small></div>`:''}
+  <div class="card">${formCampos(m.tipo)}
+  <button class="add" onclick="salvaEdit()">Salvar alterações</button>
+  <button class="add cancel" onclick="back()">Cancelar</button></div>${btnCons()}</div>`;
+},
+hist(){
+  const r=rel(tabH,mesH);
+  const tb=(k,l)=>`<button class="${tabH===k?'on':''}" onclick="setTab('${k}')">${l}</button>`;
+  return head('Relatórios')+`<div class="pad">
+  <div class="row" style="margin-bottom:8px"><button class="mini nav" onclick="mudaMesH(-1)">‹</button>
+  <input type="month" value="${mesH}" onchange="setMesH(this.value)" style="text-align:center;margin:0"><button class="mini nav" onclick="mudaMesH(1)">›</button></div>
+  <div class="seg">${tb('res','Resumo')}${tb('ent','Entradas')}${tb('sai','Saídas')}${tb('div','Dívidas/cartões')}${tb('con','Contas')}${tb('inv','Investimentos')}${tb('pat','Patrimônio')}</div>
+  <h3 style="margin-top:0">${esc(r.titulo)}</h3>${relTela(r)}
+  <div class="card"><b>Exportar este relatório</b>
+  <p class="sub">Gera um arquivo HTML, com os gráficos, que abre em qualquer navegador e pode ser guardado no Google Drive. Os valores saem reais, mesmo com os valores escondidos na tela.</p>
+  <button class="mini" onclick="exportaRel()">📄 Exportar relatório (HTML)</button></div></div>`;
+},
+tutorial(){
+  const ks=['basico','home','inv','contas','dinheiro','dividas','cartao','mov','entradas','saidas','editmov','hist','config'];
+  return head('Tutorial')+`<div class="pad"><div class="card"><b>Bem-vindo ao Minha Vida Financeira!</b>
+  <div class="tut"><p>Toque num tópico para abrir. Comece por "Primeiros passos". Em qualquer tela, o botão <b>?</b> no canto superior direito mostra a ajuda daquela tela.</p></div></div>
+  ${ks.map(k=>`<details class="card"><summary><b>${HELP[k].t}</b><span>▾</span></summary><div class="tut">${HELP[k].h}</div></details>`).join('')}${btnCons()}</div>`;
+},
+config(){
+  const opt=(v,t)=>`<option value="${v}"${L.min===v?' selected':''}>${t}</option>`;
+  const temas=['padrao','dark','light'].filter(t=>t!==S.tema).map(t=>`<button class="add" onclick="setTema('${t}')">${t==='padrao'?'Voltar ao Tema Padrão':'Mudar para Tema '+TN[t]}</button>`).join('');
+  return head('Configurações')+`<div class="pad">
+  <div class="card"><b>📖 Tutorial</b><p class="sub">Guia de como usar cada tela do app.</p>
+  <button class="add" onclick="abreEspecial('tutorial')">Abrir tutorial completo</button></div>
+  <div class="card"><b>Tema</b><p class="sub">Atual: ${TN[S.tema]}</p>${temas}</div>
+  <div class="card"><b>🔒 Bloqueio do app</b>
+  <p class="sub">Pede a senha, o padrão ou a biometria do celular para abrir o app.${L.on?' <b class="pos">Ativado.</b>':''}</p>
+  ${L.on?`<small>Bloquear quando eu sair do app:</small>
+  <select onchange="setMin(this.value)">${opt(0,'Imediatamente')}${opt(1,'Após 1 minuto')}${opt(5,'Após 5 minutos')}${opt(15,'Após 15 minutos')}</select>
+  <button class="add" onclick="bloquearAgora()">Bloquear agora</button>
+  <button class="add cancel" onclick="desativaBloqueio()">Desativar bloqueio</button>`
+  :'<button class="add" onclick="ativaBloqueio()">Ativar bloqueio</button>'}</div>
+  <div class="card"><b>💾 Backup</b>
+  <p class="sub">Guarde uma cópia dos seus dados. Útil para trocar de celular ou se o navegador for limpo.</p>
+  <button class="add" onclick="exportar()">Exportar dados</button>
+  <p class="sub" style="margin:8px 2px 0">Arquivo: <b>${esc(nomeBackup())}</b>${S.nome?'':'<br>Adicione seu nome na tela inicial para personalizar o nome do arquivo.'}</p>
+  <div style="margin-top:36px;padding-top:20px;border-top:1px solid var(--bd)">
+  <b style="font-size:16px;display:block;margin-bottom:8px">Importar backup (substitui os dados atuais):</b>
+  <input type="file" accept=".json,application/json" onchange="importar(this)"></div></div>
+  <div class="card"><b>Apagar tudo e recomeçar</b>
+  <p class="sub">Remove seu nome, contas, cartões, dívidas, investimentos, dinheiro e registros. Não pode ser desfeito.</p>
+  <button class="add danger" onclick="apagar()">Apagar tudo</button></div>${btnCons()}</div>`;
+}};
+
+/* ---------- contas / dinheiro ---------- */
+function addConta(){
+  const nome=$('n').value.trim();if(!nome)return alert('Informe o nome.');
+  S.contas.push({id:uid(),nome,valor:r2(num($('v').value))});save();render();
+}
+function editaConta(id){
+  const c=find('contas',id);
+  openModal(`<div class="row"><h3 style="margin:0">Editar conta</h3><button class="ic" onclick="closeModal()">✕</button></div>
+  <small>Nome</small><input id="en" value="${esc(c.nome)}">
+  <small>Saldo</small><input id="ev" type="number" step="0.01" inputmode="decimal" value="${c.valor}">
+  <button class="add" onclick="salvaConta('${id}')">Salvar</button><button class="add cancel" onclick="closeModal()">Cancelar</button>`);
+}
+function salvaConta(id){
+  const c=find('contas',id),nome=$('en').value.trim();if(!nome)return alert('Informe o nome.');
+  S.ops.forEach(o=>{if(o.contaId===id||(!o.contaId&&o.conta===c.nome)){o.conta=nome;o.contaId=id}});
+  S.transf.forEach(t=>{if(t.de===id)t.deNome=nome;if(t.para===id)t.paraNome=nome});
+  c.nome=nome;c.valor=r2(num($('ev').value));save();closeModal();render();
+}
+function delItem(k,id){if(confirm('Remover este item?')){S[k]=S[k].filter(x=>x.id!==id);save();render()}}
+function ajustaDinheiro(){const v=prompt('Saldo em dinheiro:',S.dinheiro);if(v===null)return;S.dinheiro=r2(num(v));save();render()}
+
+/* ---------- TRANSFERÊNCIA / SAQUE ---------- */
+function opTransf(eid){
+  if(!S.contas.length)return alert('Cadastre antes uma conta bancária.');
+  TEDIT=eid||null;
+  openModal(`<h3 style="margin-top:0">${eid?'Editar transferência / saque':'Transferir / Sacar'}</h3>
+  <select id="tq" onchange="updTq()"><option value="tr">⇄ Transferência entre contas</option><option value="sq">💵 Saque (conta → dinheiro em espécie)</option></select>
+  <small>Da conta</small><select id="tde" onchange="updTq()">${opts(S.contas,x=>esc(x.nome)+' ('+fmt(x.valor)+')')}</select>
+  <div id="tpw"></div>
+  <input id="tv" type="number" step="0.01" inputmode="decimal" placeholder="Valor">
+  <input id="td" type="date" value="${today()}">
+  <button class="add" onclick="execTransf()">${eid?'Salvar alterações':'Confirmar'}</button><button class="add cancel" onclick="closeModal()">Cancelar</button>`);
+  updTq();
+  if(eid){
+    const t=S.transf.find(z=>z.id===eid);
+    if(t){$('tq').value=t.tipo;if(find('contas',t.de))$('tde').value=t.de;updTq();
+      if(t.tipo==='tr'&&$('tpa')&&find('contas',t.para))$('tpa').value=t.para;
+      $('tv').value=t.valor;$('td').value=t.data}
+  }
+}
+function updTq(){
+  const tp=$('tq').value,de=$('tde').value;
+  if(tp==='sq'){$('tpw').innerHTML='<small>Destino: Dinheiro (em espécie)</small>';return}
+  const prev=$('tpw').querySelector('select')?$('tpw').querySelector('select').value:'';
+  const L2=S.contas.filter(x=>x.id!==de);
+  if(!L2.length){$('tpw').innerHTML='<p class="warn">Cadastre uma segunda conta para transferir.</p>';return}
+  $('tpw').innerHTML='<small>Para a conta</small><select id="tpa">'+opts(L2)+'</select>';
+  if(L2.some(x=>x.id===prev))$('tpa').value=prev;
+}
+function revertTransf(t){
+  const de=find('contas',t.de);if(de)de.valor=r2(de.valor+t.valor);
+  if(t.tipo==='tr'){const pa=find('contas',t.para);if(pa)pa.valor=r2(pa.valor-t.valor)}
+  else S.dinheiro=r2(S.dinheiro-t.valor);
+}
+function execTransf(){
+  const tp=$('tq').value,deId=$('tde').value,v=r2(num($('tv').value)),data=$('td').value,paId=$('tpa')?$('tpa').value:null;
+  if(!find('contas',deId)||!data||v<=0)return alert('Preencha conta, valor e data.');
+  if(tp==='tr'){
+    if(!paId)return alert('Cadastre uma segunda conta para transferir.');
+    if(paId===deId)return alert('Escolha uma conta de destino diferente.');
+  }
+  const ok=tx(()=>{
+    if(TEDIT){const t=S.transf.find(z=>z.id===TEDIT);if(t){revertTransf(t);S.transf=S.transf.filter(z=>z.id!==TEDIT)}}
+    const de=find('contas',deId),para=tp==='tr'?find('contas',paId):null;
+    if(!de||(tp==='tr'&&!para))return false;
+    if(de.valor<v&&!confirm('O saldo da conta é menor que o valor. Continuar?'))return false;
+    de.valor=r2(de.valor-v);
+    if(para)para.valor=r2(para.valor+v);else S.dinheiro=r2(S.dinheiro+v);
+    S.transf.push({id:uid(),tipo:tp,data,de:de.id,deNome:de.nome,para:para?para.id:null,paraNome:para?para.nome:'',valor:v});
+    save();return true;
+  });
+  if(ok){closeModal();render()}
+}
+function delTransf(id){
+  const t=S.transf.find(x=>x.id===id);if(!t)return;
+  if(!confirm('Desfazer este registro? Os saldos serão revertidos.'))return;
+  revertTransf(t);S.transf=S.transf.filter(x=>x.id!==id);save();render();
+}
+
+/* ---------- INVESTIMENTOS ---------- */
+function cardInv(x){
+  const ac=x.tipo==='Ações';
+  return `<div class="card"><div class="row"><div><b>${esc(x.nome)}</b>${ac?`<br><small>${x.qtd} × ${brl(x.preco)} · PM ${brl(x.pm)}</small>`:''}</div>
+    <div style="text-align:right"><b>${brl(V(x))}</b><br>
+    ${ac?'':`<button class="mini" onclick="rendDe('${x.id}')">+ Rendimento</button>`}
+    <button class="ic" onclick="editaInv('${x.id}')">✎</button><button class="ic" onclick="delItem('inv','${x.id}')">🗑</button></div></div></div>`;
+}
+function telaInv(){
+  const itens=grupoTipos(S.inv).map(g=>`<div class="row gh"><b>${esc(g.t)}</b><b>${brl(sumv(g.l.map(V)))}</b></div>`+g.l.map(cardInv).join('')).join('')||'<p class="sub">Nada cadastrado ainda.</p>';
+  const ops=S.ops.slice(-15).reverse().map(o=>`<div class="card row"><div><b>${o.dir==='inv'?'Investiu em':'Resgatou de'} ${esc(o.inv)}</b><br>
+    <small>${fdate(o.data)} · ${o.dir==='inv'?'de':'para'} ${esc(o.conta)}${o.q?` · ${o.q} × ${brl(o.p)}`:''}${o.ganho?` · ${o.ganho>0?'ganho':'perda'} ${brl(Math.abs(o.ganho))}`:''}</small></div>
+    <div style="white-space:nowrap"><b class="${o.dir==='inv'?'neg':'pos'}">${brl(o.total)}</b><button class="ic" onclick="opInv('${o.id}')">✎</button><button class="ic" onclick="delOp('${o.id}')">🗑</button></div></div>`).join('');
+  return head('Reservas/Investimentos')+`<div class="pad"><div class="card total"><small>Total investido</small><div class="v" style="font-size:24px">${brl(sumv(S.inv.map(V)))}</div></div>
+  <button class="add" style="margin-bottom:6px" onclick="opInv()">⇄ Investir / Resgatar</button>${itens}
+  <h3>Adicionar investimento</h3><div class="card"><input id="n" placeholder="Ex.: Poupança Caixa, PETR4">
+  <select id="tp" onchange="updInvForm()">${TIPOS.map(t=>`<option>${t}</option>`).join('')}</select>
+  <div id="fn"><input id="v" type="number" step="0.01" inputmode="decimal" placeholder="Valor atual"></div>
+  <div id="fa" style="display:none"><input id="pu" type="number" step="any" inputmode="decimal" placeholder="Preço unitário da ação">
+  <input id="qt" type="number" step="any" inputmode="decimal" placeholder="Quantidade"></div>
+  <button class="add" onclick="addInv()">Adicionar</button></div>
+  ${ops?'<h3>Últimas operações</h3>'+ops:''}${btnCons()}</div>`;
+}
+function updInvForm(){const ac=$('tp').value==='Ações';$('fa').style.display=ac?'':'none';$('fn').style.display=ac?'none':''}
+function addInv(){
+  const nome=$('n').value.trim(),tp=$('tp').value;if(!nome)return alert('Informe o nome.');
+  const o={id:uid(),nome,tipo:tp};
+  if(tp==='Ações'){const p=num($('pu').value),q=num($('qt').value);
+    if(p<=0||q<=0)return alert('Informe o preço unitário e a quantidade.');
+    o.preco=p;o.qtd=q;o.pm=p}
+  else o.valor=r2(num($('v').value));
+  S.inv.push(o);save();render();
+}
+function editaInv(id){
+  const x=find('inv',id),ac=x.tipo==='Ações';
+  openModal(`<div class="row"><h3 style="margin:0">Editar investimento</h3><button class="ic" onclick="closeModal()">✕</button></div>
+  <small>Nome</small><input id="en" value="${esc(x.nome)}">
+  ${ac?`<small>Cotação atual (preço unitário)</small><input id="ep" type="number" step="any" inputmode="decimal" value="${x.preco}">
+  <small>Quantidade</small><input id="eq" type="number" step="any" inputmode="decimal" value="${x.qtd}">
+  <small>Preço médio</small><input id="em" type="number" step="any" inputmode="decimal" value="${x.pm}">`
+  :`<small>Valor atual</small><input id="ev" type="number" step="0.01" inputmode="decimal" value="${x.valor}">`}
+  <button class="add" onclick="salvaInv('${id}')">Salvar</button><button class="add cancel" onclick="closeModal()">Cancelar</button>`);
+}
+function salvaInv(id){
+  const x=find('inv',id),nome=$('en').value.trim();if(!nome)return alert('Informe o nome.');
+  if(x.tipo==='Ações'){
+    const p=num($('ep').value),q=num($('eq').value);
+    if(p<=0||q<0)return alert('Informe cotação e quantidade válidas.');
+    x.preco=p;x.qtd=rq(q);x.pm=num($('em').value);
+  }else x.valor=r2(num($('ev').value));
+  S.ops.forEach(o=>{if(o.invId===id||(!o.invId&&o.inv===x.nome)){o.inv=nome;o.invId=id}});
+  x.nome=nome;save();closeModal();render();
+}
+function rendDe(id){preset=id;go('entradas')}
+
+/* Investir / Resgatar (criar, editar e desfazer) */
+const opConta=o=>(o.contaId&&find('contas',o.contaId))||S.contas.find(c=>c.nome===o.conta);
+const opInvest=o=>(o.invId&&find('inv',o.invId))||S.inv.find(i=>i.nome===o.inv);
+function opInv(eid){
+  if(!S.contas.length)return alert('Cadastre antes uma conta bancária.');
+  OPEDIT=eid||null;
+  openModal(`<h3 style="margin-top:0">${eid?'Editar operação':'Investir / Resgatar'}</h3>
+  <select id="oq" onchange="updDir()"><option value="inv">Investir (conta → investimento)</option><option value="res">Resgatar (investimento → conta)</option></select>
+  <small>Investimento</small><select id="oi" onchange="updOp()"></select>
+  <div id="onw"></div>
+  <small>Conta bancária</small><select id="oc">${opts(S.contas)}</select>
+  <div id="of"></div><div id="ot" class="sub"></div>
+  <input id="od" type="date" value="${today()}">
+  <button class="add" onclick="execOp()">${eid?'Salvar alterações':'Confirmar'}</button><button class="add cancel" onclick="closeModal()">Cancelar</button>`);
+  updDir();
+  if(eid){
+    const o=S.ops.find(z=>z.id===eid);
+    if(o){
+      $('oq').value=o.dir;updDir();
+      const iv=opInvest(o);if(iv)$('oi').value=iv.id;
+      updOp();
+      const c=opConta(o);if(c)$('oc').value=c.id;
+      if(o.q){$('op').value=o.p;$('oqt').value=o.q}else $('ov').value=o.total;
+      $('od').value=o.data;totOp();
+    }
+  }
+}
+function updDir(){
+  const dir=$('oq').value,prev=$('oi').value;
+  let h=opts(S.inv,x=>esc(x.nome)+' ('+esc(x.tipo)+')');
+  if(dir==='inv')h+='<option value="__new">➕ Novo investimento…</option>';
+  if(!h)h='<option value="">Nenhum investimento para resgatar</option>';
+  $('oi').innerHTML=h;
+  if([...$('oi').options].some(o=>o.value===prev))$('oi').value=prev;
+  else if(dir==='inv'&&!S.inv.length)$('oi').value='__new';
+  updOp();
+}
+function ctxOp(){
+  const v=$('oi').value;
+  if(v==='__new')return{novo:1,ac:$('nt')?$('nt').value==='Ações':false};
+  const inv=find('inv',v);
+  return{inv,ac:!!inv&&inv.tipo==='Ações'};
+}
+function updOp(){
+  const novo=$('oi').value==='__new';
+  $('onw').innerHTML=novo?`<input id="nn" placeholder="Nome do novo investimento (ex.: PETR4, Poupança Itaú)">
+  <select id="nt" onchange="updTipo()">${TIPOS.map(t=>`<option>${t}</option>`).join('')}</select>`:'';
+  updTipo();
+}
+function updTipo(){
+  const x=ctxOp();
+  $('of').innerHTML=x.ac
+   ?`<input id="op" type="number" step="any" inputmode="decimal" placeholder="Preço unitário" oninput="totOp()"><input id="oqt" type="number" step="any" inputmode="decimal" placeholder="Quantidade${x.inv?' (em carteira: '+x.inv.qtd+')':''}" oninput="totOp()">`
+   :`<input id="ov" type="number" step="0.01" inputmode="decimal" placeholder="Valor">`;
+  totOp();
+}
+function totOp(){
+  const x=ctxOp();if(!x.ac){$('ot').textContent='';return}
+  const p=num($('op').value),q=num($('oqt').value),tot=r2(p*q);
+  let s='Total: '+fmt(tot);
+  if($('oq').value==='res'&&x.inv&&tot>0){const g=r2((p-x.inv.pm)*q);s+=' · '+(g>=0?'Ganho':'Perda')+' estimado: '+fmt(Math.abs(g))}
+  $('ot').textContent=s;
+}
+/* reverte os efeitos de uma operação (conta, investimento e registro de ganho/perda) */
+function revertOp(o){
+  const c=opConta(o),inv=opInvest(o),ac=!!o.q;
+  if(!inv){
+    if(!confirm('O investimento "'+o.inv+'" não existe mais. Reverter apenas o saldo da conta?'))return false;
+  }else if(o.dir==='inv'){
+    if(ac){
+      if(o.q>inv.qtd+1e-9){alert('Não dá para desfazer: parte dessas ações já foi vendida. Desfaça antes os resgates posteriores.');return false}
+      const nq=rq(inv.qtd-o.q);
+      inv.pm=nq>0?Math.max(0,(inv.pm*inv.qtd-o.p*o.q)/nq):0;inv.qtd=nq;
+    }else{
+      if(o.total>inv.valor+0.005&&!confirm('O saldo do investimento é menor que o valor aplicado. Continuar?'))return false;
+      inv.valor=r2(inv.valor-o.total);
+    }
+    if(o.novo&&(ac?inv.qtd<=0:Math.abs(inv.valor)<0.005))S.inv=S.inv.filter(x=>x.id!==inv.id);
+  }else{
+    if(ac){
+      const pmA=o.pmA!=null?o.pmA:(o.q?r2(o.p-(o.ganho||0)/o.q):0);
+      if(inv.qtd<=0)inv.pm=pmA;
+      inv.qtd=rq(inv.qtd+o.q);
+    }else inv.valor=r2(inv.valor+o.total);
+  }
+  if(o.dir==='res'){
+    S.movs=S.movs.filter(m=>o.movId?m.id!==o.movId:!(m.auto&&m.data===o.data&&o.ganho&&m.valor===Math.abs(o.ganho)&&String(m.desc).indexOf(o.inv)>=0));
+  }
+  if(c)c.valor=r2(c.valor+(o.dir==='inv'?o.total:-o.total));
+  return true;
+}
+function aplicaOp(P){
+  const c=find('contas',P.cid);if(!c)return false;
+  let inv=find('inv',P.spec.id);
+  if(!inv){
+    if(P.dir==='res'){alert('Investimento não encontrado.');return false}
+    inv=P.spec;S.inv.push(inv);
+  }
+  let ganho=0,pmA=null,movId=null;
+  if(P.dir==='inv'){
+    if(c.valor<P.total&&!confirm('O saldo da conta é menor que o valor. Continuar?'))return false;
+    c.valor=r2(c.valor-P.total);
+    if(P.ac){const nq=rq(inv.qtd+P.q);inv.pm=(inv.pm*inv.qtd+P.p*P.q)/nq;inv.qtd=nq;inv.preco=P.p}
+    else inv.valor=r2(inv.valor+P.total);
+  }else{
+    if(P.ac){
+      if(P.q>inv.qtd+1e-9){alert('Quantidade maior que a disponível ('+inv.qtd+').');return false}
+      pmA=inv.pm;ganho=r2((P.p-inv.pm)*P.q);inv.qtd=rq(inv.qtd-P.q);inv.preco=P.p;if(inv.qtd<=0){inv.qtd=0;inv.pm=0}
+      if(ganho!==0){
+        movId=uid();
+        S.movs.push({id:movId,tipo:ganho>0?'in':'out',desc:(ganho>0?'Ganho':'Perda')+' na venda de '+inv.nome+' ('+P.q+' × '+fmt(P.p)+')',
+          valor:Math.abs(ganho),data:P.data,meio:'conta',ref:c.id,sem:1,auto:1,cat:'Ações'});
+      }
+    }else{
+      if(P.total>inv.valor+0.005){alert('Valor maior que o saldo do investimento.');return false}
+      inv.valor=r2(inv.valor-P.total);
+    }
+    c.valor=r2(c.valor+P.total);
+  }
+  S.ops.push({id:uid(),data:P.data,dir:P.dir,inv:inv.nome,invId:inv.id,conta:c.nome,contaId:c.id,total:P.total,p:P.p,q:P.q,ganho,pmA,novo:!!P.novo,movId});
+  save();return true;
+}
+function execOp(){
+  const dir=$('oq').value,cid=$('oc').value,data=$('od').value,x=ctxOp(),eid=OPEDIT;
+  if(!data||!find('contas',cid)||(!x.novo&&!x.inv))return alert('Preencha todos os campos.');
+  const ac=x.ac;let p=0,q=0,total;
+  if(ac){p=num($('op').value);q=num($('oqt').value);if(p<=0||q<=0)return alert('Informe preço unitário e quantidade.');total=r2(p*q)}
+  else{total=r2(num($('ov').value));if(total<=0)return alert('Informe o valor.')}
+  let spec;
+  if(x.novo){
+    const nome=$('nn').value.trim();if(!nome)return alert('Informe o nome do novo investimento.');
+    const tp=$('nt').value;
+    spec={id:uid(),nome,tipo:tp,...(tp==='Ações'?{preco:0,qtd:0,pm:0}:{valor:0})};
+  }else spec={id:x.inv.id,nome:x.inv.nome,tipo:x.inv.tipo,...(ac?{preco:0,qtd:0,pm:0}:{valor:0})};
+  const ok=tx(()=>{
+    let novo=!!x.novo;
+    if(eid){
+      const o=S.ops.find(z=>z.id===eid);
+      if(o){if(o.novo&&o.invId===spec.id)novo=true;if(!revertOp(o))return false;S.ops=S.ops.filter(z=>z.id!==eid)}
+    }
+    return aplicaOp({dir,spec,novo,cid,data,p,q,total,ac});
+  });
+  if(ok){closeModal();render()}
+}
+function delOp(id){
+  const o=S.ops.find(z=>z.id===id);
+  if(!o||!confirm('Desfazer esta operação? Os saldos da conta e do investimento serão revertidos.'))return;
+  if(tx(()=>{if(!revertOp(o))return false;S.ops=S.ops.filter(z=>z.id!==id);save();return true}))render();
+}
+
+/* ---------- DÍVIDAS / CARTÕES ---------- */
+function parcelar(total,n,mes,pagas){
+  const base=Math.floor(total/n*100)/100;let acc=0;
+  return Array.from({length:n},(_,i)=>{const v=i===n-1?r2(total-acc):base;acc=r2(acc+v);return{id:uid(),valor:v,mes:addM(mes,i),paga:i<pagas}});
+}
+const btnDesfaz=(did,pid)=>`<small class="pos">✓ paga</small> <button class="mini alt" onclick="desfazerPagDiv('${did}','${pid}')">↩ desfazer</button>`;
+/* etiqueta de situação de uma cobrança em aberto */
+function tagItem(x){
+  if(x.paga)return '';
+  if(atrasada(x))return '<span class="tag neg">Em atraso</span>';
+  const c=cur();
+  return x.mes===c?'<span class="tag">este mês</span>':x.mes>c?'<span class="tag">próxima</span>':'';
+}
+/* categorias de saída oferecidas para as dívidas (o valor é o nome da categoria) */
+function catOutOpts(sel){
+  const L2=S.cats.out.map(c=>c.nome);
+  if(sel&&!L2.includes(sel))L2.push(sel);
+  const def=sel||(L2.includes('Outros')?'Outros':L2[0]);
+  return L2.map(n=>`<option value="${esc(n)}"${n===def?' selected':''}>${esc(n)}</option>`).join('');
+}
+/* criar categoria de saída na hora (dentro de qualquer formulário de dívida ou compra) */
+function boxCat(id){
+  const b=$(id+'_box');if(!b)return;
+  if(b.innerHTML){b.innerHTML='';return}
+  b.innerHTML=`<div class="row" style="gap:6px"><input id="${id}_nn" placeholder="Nome da nova categoria de saída" style="margin:5px 0"><button class="mini" onclick="criaCatInline('${id}')">Criar</button></div>`;
+  $(id+'_nn').focus();
+}
+function criaCatInline(id){
+  const nome=$(id+'_nn').value.trim();if(!nome)return alert('Informe o nome da categoria.');
+  if(S.cats.out.some(c=>c.nome.toLowerCase()===nome.toLowerCase()))return alert('Já existe uma categoria de saída com esse nome. Escolha-a na lista.');
+  S.cats.out.push({id:uid(),nome,rec:false,valor:0});save();
+  $(id).innerHTML=catOutOpts(nome);$(id+'_box').innerHTML='';
+}
+/* caixa de débito automático (dívida ou cartão) */
+function autoHTML(id,on,conta,txt){
+  const cs=S.contas.map(c=>`<option value="${c.id}"${c.id===conta?' selected':''}>${esc(c.nome)}</option>`).join('');
+  return `<label class="chk"><input type="checkbox" id="${id}"${on?' checked':''} onchange="updAuto('${id}')"><span>${txt}</span></label>
+  <div id="${id}_box" style="display:${on?'':'none'}"><small>Conta debitada</small><select id="${id}_c">${cs}</select>
+  <small>O app paga sozinho no dia do vencimento, a partir de hoje: debita da conta e registra a saída. Cobranças com vencimento anterior ficam "Em atraso" para você pagar pelo botão PAGAR.</small></div>`;
+}
+function updAuto(id){
+  const on=$(id).checked;
+  if(on&&!S.contas.length){alert('Cadastre antes uma conta bancária para o débito automático.');$(id).checked=false;return}
+  $(id+'_box').style.display=on?'':'none';
+}
+function lerAuto(id){
+  const el=$(id);if(!el||!el.checked)return{on:false};
+  const c=$(id+'_c')?$(id+'_c').value:'';
+  if(!c||!find('contas',c)){alert('Escolha a conta do débito automático.');return null}
+  return{on:true,conta:c};
+}
+
+/* bloco de um mês (fatura) */
+function blocoMes(its,cid,mes,dia){
+  const c=cur();
+  const L2=its.filter(x=>x.mes===mes),ab=L2.filter(x=>!x.paga),tot=sumv(ab.map(x=>x.valor)),all=sumv(L2.map(x=>x.valor));
+  const tag=ab.some(atrasada)?'<span class="tag neg">Em atraso</span>':mes===c?'<span class="tag">este mês</span>':'';
+  const venc=dia?`<br><small>vence ${vData(mes,dia)}</small>`:'';
+  const dir=ab.length?`<b class="neg big">${brl(tot)}</b>`:`<span style="text-align:right"><b class="pos big">${brl(all)}</b><br><small class="pos">✓ paga</small></span>`;
+  const fat=cid&&ab.length>1?`<div style="margin-top:6px"><button class="mini alt" onclick="pagarFatura('${cid}','${mes}')">Pagar fatura inteira (${brl(tot)})</button></div>`:'';
+  return `<div class="card"><div class="row"><div><b>${mlabel(mes)}${tag}</b>${venc}</div>${dir}</div>${fat}`+
+    L2.map(x=>`<div class="row it"><div><span>${esc(x.d.nome)}</span><br><small>${x.d.kind==='assin'?'🔁 assinatura mensal':'parcela '+(x.i+1)+'/'+x.d.n} · ${esc(x.d.cat||'Outros')}</small></div>
+    <div style="text-align:right"><b>${brl(x.valor)}</b><br>${x.paga?btnDesfaz(x.d.id,x.pid):`<button class="mini" onclick="pagar('${x.d.id}','${x.pid}')">PAGAR</button>`}</div></div>`).join('')+'</div>';
+}
+
+/* lista de compras/assinaturas dentro de um cartão */
+function cadList(L2){
+  return L2.map(d=>{
+    let info,mensal,acts='';
+    if(d.kind==='assin'){
+      const at=ativa(d);
+      mensal=d.valor;
+      info=`🔁 Assinatura · desde ${mlabel(d.inicio)}${d.fim?' · '+(at?'cobra até ':'encerrada em ')+mlabel(d.fim):' · ativa'}`;
+      acts=d.fim?`<button class="mini" onclick="reativar('${d.id}')">Reativar</button>`:`<button class="mini alt" onclick="cancelAss('${d.id}')">Cancelar</button>`;
+    }else{
+      const rest=d.parcelas.filter(p=>!p.paga);
+      mensal=d.parcelas[0].valor;
+      info=`${d.n}x · restam ${rest.length} · total ${brl(d.total)} (aberto: ${brl(sumv(rest.map(p=>p.valor)))})`;
+    }
+    return `<div class="card row"><div><b>${esc(d.nome)}</b><br><b class="neg big">${brl(mensal)}/mês</b><br><small>${info}<br>Categoria de saída: ${esc(d.cat||'Outros')}</small></div>
+    <div style="text-align:right">${acts}<br><button class="ic" onclick="editaDivida('${d.id}')">✎</button><button class="ic" onclick="delDivida('${d.id}')">🗑</button></div></div>`}).join('')||'<p class="sub">Nada cadastrado ainda.</p>';
+}
+
+/* card único de uma dívida (Outras dívidas): informações, cobranças e botões */
+function cardDivida(d){
+  const c=cur(),view=mesV!==c,its=itens(x=>x.id===d.id,ateM(mesV)),ab=its.filter(x=>!x.paga);
+  let mostra;
+  if(view)mostra=its.filter(x=>x.mes===mesV);
+  else{const dev=ab.filter(x=>x.mes<=c);mostra=dev.length?dev:ab.slice(0,1)}
+  const dia=vDia(d);
+  let info,mensal,acts='';
+  if(d.kind==='assin'){
+    const at=ativa(d);
+    mensal=d.valor;
+    info=`🔁 Assinatura / recorrente · desde ${mlabel(d.inicio)}${d.fim?' · '+(at?'cobra até ':'encerrada em ')+mlabel(d.fim):' · ativa'}`;
+    acts=d.fim?`<button class="mini" onclick="reativar('${d.id}')">Reativar</button>`:`<button class="mini alt" onclick="cancelAss('${d.id}')">Cancelar</button>`;
+  }else{
+    const rest=d.parcelas.filter(p=>!p.paga);
+    mensal=d.parcelas[0].valor;
+    info=`${d.n}x · restam ${rest.length} · total ${brl(d.total)} (aberto: ${brl(sumv(rest.map(p=>p.valor)))})`;
+  }
+  const vtxt=dia?` · vence dia ${dia}`:'';
+  const ac=d.auto&&find('contas',d.autoConta);
+  const autoTxt=ac?`<br>🔁 Débito automático em ${esc(ac.nome)}`:'';
+  const defVenc=dia?'':`<div><button class="mini alt" onclick="editaDivida('${d.id}')">Definir vencimento</button></div>`;
+  const linhas=mostra.map(x=>{
+    return `<div class="row it"><div><span>${mlabel(x.mes)}${tagItem(x)}</span><br><small>${x.d.kind==='assin'?'🔁 assinatura mensal':'parcela '+(x.i+1)+'/'+x.d.n}${dia?' · vence '+vData(x.mes,dia):''}</small></div>
+    <div style="text-align:right"><b>${brl(x.valor)}</b><br>${x.paga?btnDesfaz(d.id,x.pid):`<button class="mini" onclick="pagar('${d.id}','${x.pid}')">PAGAR</button>`}</div></div>`}).join('')
+    ||(view?`<div class="it"><small>Sem cobrança em ${mlabel(mesV)}.</small></div>`:`<div class="it"><small class="pos">${d.kind==='parc'?'✓ Quitada':'✓ Em dia'}</small></div>`);
+  return `<div class="card"><div class="row"><div><b>${esc(d.nome)}</b><br><b class="neg big">${brl(mensal)}/mês</b><br><small>${esc(d.tipo)}${vtxt}<br>${info}<br>Categoria de saída: ${esc(d.cat||'Outros')}${autoTxt}</small></div>
+  <div style="text-align:right">${acts}<br><button class="ic" onclick="editaDivida('${d.id}')" title="Editar">✎</button><button class="ic" onclick="delDivida('${d.id}')">🗑</button></div></div>${defVenc}${linhas}</div>`;
+}
+
+function formDiv(cid){
+  return `<h3>Adicionar ${cid?'compra / assinatura':'dívida'}</h3><div class="card">
+  ${cid?'<small style="display:block;margin-bottom:4px">Compra no cartão é dívida: só vira saída quando a fatura é paga.</small>':''}
+  <input id="dn" placeholder="${cid?'Descrição (ex.: Netflix, Geladeira)':'Descrição (ex.: Aluguel, Financiamento do carro)'}">
+  ${cid?'':'<select id="dtp"><option>Financiamento</option><option>Empréstimo</option><option>Outros</option></select>'}
+  <small>Categoria de saída (quando for paga)</small><select id="dcat">${catOutOpts()}</select>
+  <button class="mini alt" onclick="boxCat('dcat')">➕ Nova categoria</button><div id="dcat_box"></div>
+  <select id="dk" onchange="updDk()"><option value="parc">Parcelada (valor total ÷ parcelas)</option><option value="assin">🔁 Assinatura / recorrente (todo mês até cancelar)</option></select>
+  <input id="dv" type="number" step="0.01" inputmode="decimal" placeholder="Valor total">
+  <div id="dp"><input id="dnp" type="number" min="1" inputmode="numeric" placeholder="Quantidade de parcelas (1 = à vista)"></div>
+  ${cid?`<small>Data da compra / início da assinatura</small><input id="dcd" type="date" value="${today()}" onchange="hintFat('${cid}')"><small id="hf"></small>`
+       :`<small>Dia do vencimento / pagamento (obrigatório)</small><input id="dvd" type="number" min="1" max="31" inputmode="numeric" placeholder="Dia do mês (1 a 31)">
+  <small>Mês da 1ª cobrança (meses anteriores ficam como em atraso)</small><input id="dm" type="month" value="${cur()}">`}
+  <div id="dg"><input id="dpg" type="number" min="0" inputmode="numeric" placeholder="Parcelas já pagas (opcional)"></div>
+  ${cid?'':autoHTML('dauto',false,null,'Débito automático (debitar na conta no vencimento)')}
+  <button class="add" onclick="addDivida('${cid||''}')">Adicionar</button></div>`;
+}
+function hintFat(cid){
+  const c=find('cartoes',cid),el=$('hf');if(!c||!el||!$('dcd'))return;
+  el.textContent=textoFatura($('dcd').value,c);
+}
+function updDk(){const a=$('dk').value==='assin';$('dp').style.display=a?'none':'';$('dg').style.display=a?'none':'';$('dv').placeholder=a?'Valor mensal':'Valor total'}
+
+function datasCartao(k){
+  return (k.venc?'vence dia '+k.venc:'sem vencimento')+' · '+(k.fech?'fecha dia '+k.fech:'sem fechamento')+(k.auto?' · débito automático':'');
+}
+
+function telaDiv(){
+  const c=cur(),view=mesV!==c,r=resumo(()=>true),rm=resMes(()=>true,mesV);
+  const cards=S.cartoes.map(k=>{
+    const f=d=>d.cartao===k.id,x=resumo(f),y=resMes(f,mesV);
+    const dir=view?`<span style="text-align:right"><b class="neg big">${brl(y.total)}</b><br><small>fatura do mês</small></span>`
+                  :`<span style="text-align:right"><b class="neg big">${brl(x.mes)}</b><br><small>este mês</small></span>`;
+    return `<button class="btn" onclick="abrirCartao('${k.id}')"><span>💳 ${esc(k.nome)}<br><small>${x.nParc} parcela${x.nParc===1?'':'s'} · ${x.nAss} assinatura${x.nAss===1?'':'s'} (${brl(x.ass)}/mês)<br>Total em aberto: ${brl(x.total)}${x.atraso>0?` · <b class="neg">Em atraso: ${brl(x.atraso)}</b>`:''}<br>${datasCartao(k)}</small></span>${dir}</button>`}).join('')||'<p class="sub">Nenhum cartão cadastrado.</p>';
+  const outras=S.dividas.filter(d=>!d.cartao);
+  const topo=view
+    ?`<small>Dívidas em ${mlabel(mesV)}</small><div class="v">${brl(rm.total)}</div><small>${rm.nAb} em aberto (${brl(rm.aberto)}) · ${rm.n-rm.nAb} paga${rm.n-rm.nAb===1?'':'s'}</small>`
+    :`<small>A pagar este mês</small><div class="v">${brl(r.mes)}</div>
+  <small>Total em aberto: ${brl(r.total)}${r.nAss?` · assinaturas: ${brl(r.ass)}/mês`:''}${r.atraso>0?` · Em atraso: ${brl(r.atraso)}`:''}</small>`;
+  return head('Dívidas')+`<div class="pad">${navMes()}<div class="card total">${topo}</div>
+  <h3>Cartões de crédito</h3>${cards}
+  <div class="card"><input id="cn" placeholder="Novo cartão (ex.: Nubank, Inter)">
+  <input id="cv" type="number" min="1" max="31" inputmode="numeric" placeholder="Dia do vencimento da fatura (1 a 31)">
+  <input id="cf" type="number" min="1" max="31" inputmode="numeric" placeholder="Dia do fechamento da fatura (1 a 31)">
+  ${autoHTML('kauto',false,null,'Débito automático da fatura (debitar na conta no vencimento)')}
+  <button class="add" onclick="addCartao()">Adicionar cartão</button></div>
+  <h3>Outras dívidas (financiamentos, aluguel etc.)</h3>
+  ${outras.map(cardDivida).join('')||'<p class="sub">Nenhuma dívida cadastrada.</p>'}
+  ${formDiv('')}${btnCons()}</div>`;
+}
+function telaCartao(){
+  const c=find('cartoes',cartaoAtual);
+  if(!c){route='dividas';return telaDiv()}
+  const m=cur(),view=mesV!==m,f=d=>d.cartao===c.id,r=resumo(f),rm=resMes(f,mesV),L2=S.dividas.filter(f),its=itens(f,ateM(mesV));
+  const atras=view?[]:[...new Set(its.filter(atrasada).map(x=>x.mes))].filter(mm=>mm!==mesV).sort();
+  const atual=its.some(x=>x.mes===mesV)?blocoMes(its,c.id,mesV,c.venc):'<p class="sub">Nenhuma cobrança neste mês.</p>';
+  const topo=view
+    ?`<small>Fatura de ${mlabel(mesV)}</small><div class="v">${brl(rm.total)}</div><small>${rm.nAb} em aberto (${brl(rm.aberto)}) · ${rm.n-rm.nAb} paga${rm.n-rm.nAb===1?'':'s'}</small>`
+    :`<small>Fatura a pagar este mês</small><div class="v">${brl(r.mes)}</div>
+  <small>Total em aberto: ${brl(r.total)} · ${r.nParc} parcela${r.nParc===1?'':'s'} restante${r.nParc===1?'':'s'}${r.nAss?` · assinaturas: ${brl(r.ass)}/mês`:''}${r.atraso>0?` · Em atraso: ${brl(r.atraso)}`:''}</small>`;
+  const ac=c.auto&&find('contas',c.autoConta);
+  return head('💳 '+esc(c.nome),'<button class="hc" onclick="delCartao()" aria-label="Remover cartão">🗑</button>')+`<div class="pad">${navMes()}<div class="card total">${topo}
+  <div class="row" style="margin-top:8px"><small>${c.venc?'Vence dia '+c.venc:'Vencimento não definido'} · ${c.fech?'fecha dia '+c.fech:'fechamento não definido'}${ac?' · débito automático em '+esc(ac.nome):''}</small><button class="eye" onclick="editaCartao()">✎ Editar</button></div></div>
+  <h3>Fatura de ${mlabel(mesV)}</h3>${atual}
+  ${atras.length?'<h3>Faturas em atraso</h3>'+atras.map(mm=>blocoMes(its,c.id,mm,c.venc)).join(''):''}
+  ${formDiv(c.id)}
+  <h3>Compras e assinaturas</h3>${cadList(L2)}
+  ${btnCons()}</div>`;
+}
+function abrirCartao(id){cartaoAtual=id;go('cartao')}
+function addCartao(){
+  const nome=$('cn').value.trim(),venc=lerDia($('cv').value),fech=lerDia($('cf').value);
+  if(!nome)return alert('Informe o nome do cartão.');
+  if(!venc)return alert('Informe o dia do vencimento da fatura (1 a 31).');
+  if(!fech)return alert('Informe o dia do fechamento da fatura (1 a 31).');
+  const a=lerAuto('kauto');if(a===null)return;
+  const k={id:uid(),nome,venc,fech};
+  if(a.on){k.auto=true;k.autoConta=a.conta;k.autoDesde=today()}
+  S.cartoes.push(k);processaAuto();save();render();
+}
+function editaCartao(){
+  const c=find('cartoes',cartaoAtual);
+  openModal(`<div class="row"><h3 style="margin:0">Editar cartão</h3><button class="ic" onclick="closeModal()">✕</button></div>
+  <small>Nome</small><input id="en" value="${esc(c.nome)}">
+  <small>Dia do vencimento da fatura (1 a 31)</small><input id="ev" type="number" min="1" max="31" inputmode="numeric" value="${c.venc||''}">
+  <small>Dia do fechamento da fatura (1 a 31)</small><input id="ef" type="number" min="1" max="31" inputmode="numeric" value="${c.fech||''}">
+  ${autoHTML('ekauto',!!c.auto,c.autoConta,'Débito automático da fatura (debitar na conta no vencimento)')}
+  <button class="add" onclick="salvaCartao()">Salvar</button><button class="add cancel" onclick="closeModal()">Cancelar</button>`);
+}
+function salvaCartao(){
+  const c=find('cartoes',cartaoAtual),nome=$('en').value.trim(),v=lerDia($('ev').value),f=lerDia($('ef').value);
+  if(!nome)return alert('Informe o nome do cartão.');
+  if(!v||!f)return alert('Informe vencimento e fechamento (1 a 31).');
+  const a=lerAuto('ekauto');if(a===null)return;
+  c.nome=nome;c.venc=v;c.fech=f;
+  if(a.on&&!c.auto)c.autoDesde=today();
+  c.auto=a.on;c.autoConta=a.on?a.conta:null;
+  processaAuto();save();closeModal();render();
+}
+function editaDivida(id){
+  const d=find('dividas',id),pago=temPago(d),ass=d.kind==='assin',mes=ass?d.inicio:d.parcelas[0].mes;
+  const tipos=[...new Set(['Financiamento','Empréstimo','Outros',d.tipo])];
+  openModal(`<div class="row"><h3 style="margin:0">Editar ${ass?'assinatura / recorrente':'dívida'}</h3><button class="ic" onclick="closeModal()">✕</button></div>
+  <small>Descrição</small><input id="en" value="${esc(d.nome)}">
+  <small>Categoria de saída (quando for paga)</small><select id="ecat">${catOutOpts(d.cat)}</select>
+  <button class="mini alt" onclick="boxCat('ecat')">➕ Nova categoria</button><div id="ecat_box"></div>
+  ${d.cartao?'':`<small>Tipo</small><select id="et">${tipos.map(t=>`<option${d.tipo===t?' selected':''}>${esc(t)}</option>`).join('')}</select>
+  <small>Dia do vencimento (1 a 31)</small><input id="ed" type="number" min="1" max="31" inputmode="numeric" value="${d.venc||''}">
+  ${autoHTML('eauto',!!d.auto,d.autoConta,'Débito automático (debitar na conta no vencimento)')}`}
+  ${pago?'<p class="warn">Esta dívida já tem pagamentos: só descrição, categoria'+(d.cartao?'':', tipo, vencimento e débito automático')+' podem ser alterados. Para mudar valores, desfaça antes os pagamentos (↩ desfazer).</p>'
+  :`<small>${ass?'Valor mensal':'Valor total'}</small><input id="ev" type="number" step="0.01" inputmode="decimal" value="${ass?d.valor:d.total}">
+  ${ass?'':`<small>Quantidade de parcelas</small><input id="ep" type="number" min="1" inputmode="numeric" value="${d.n}">`}
+  <small>Mês da 1ª cobrança</small><input id="em" type="month" value="${mes}">`}
+  <button class="add" onclick="salvaDivida('${id}')">Salvar</button><button class="add cancel" onclick="closeModal()">Cancelar</button>`);
+}
+function salvaDivida(id){
+  const d=find('dividas',id),pago=temPago(d),ass=d.kind==='assin',nome=$('en').value.trim();
+  if(!nome)return alert('Informe a descrição.');
+  const cat=$('ecat').value;
+  let venc=d.venc,a={on:false};
+  if(!d.cartao){
+    venc=lerDia($('ed').value);if(!venc)return alert('Informe o dia do vencimento (1 a 31).');
+    a=lerAuto('eauto');if(a===null)return;
+  }
+  if(!pago){
+    const valor=r2(num($('ev').value)),mes=$('em').value;
+    if(valor<=0||!mes)return alert('Informe valor e mês da 1ª cobrança.');
+    if(ass){d.valor=valor;d.inicio=mes;if(d.fim&&d.fim<mes)d.fim=null}
+    else{
+      const n=parseInt($('ep').value)||0;if(n<1)return alert('Informe a quantidade de parcelas.');
+      d.total=valor;d.n=n;d.parcelas=parcelar(valor,n,mes,0);
+    }
+  }
+  if(!d.cartao){
+    d.tipo=$('et').value;d.venc=venc;
+    if(a.on&&!d.auto)d.autoDesde=today();
+    d.auto=a.on;d.autoConta=a.on?a.conta:null;
+  }
+  d.nome=nome;d.cat=cat;
+  /* pagamentos já feitos só dessa dívida acompanham a nova categoria */
+  S.movs.forEach(pm=>{if(pm.pgs&&pm.pgs.length&&pm.pgs.every(p=>p.d===id))pm.cat=cat});
+  processaAuto();save();closeModal();render();
+}
+function delCartao(){
+  const c=find('cartoes',cartaoAtual);
+  if(!confirm('Remover o cartão "'+c.nome+'" e todas as suas compras e assinaturas?'))return;
+  S.dividas=S.dividas.filter(d=>d.cartao!==c.id);
+  S.cartoes=S.cartoes.filter(x=>x.id!==c.id);
+  save();go('dividas');
+}
+function addDivida(cid){
+  const nome=$('dn').value.trim(),ass=$('dk').value==='assin',valor=r2(num($('dv').value));
+  if(!nome||valor<=0)return alert('Preencha descrição e valor.');
+  const cat=$('dcat').value;
+  let mes,venc=null,a={on:false};
+  if(cid){
+    const dt=$('dcd').value;if(!dt)return alert('Informe a data da compra.');
+    mes=mesFatura(dt,find('cartoes',cid));
+  }else{
+    mes=$('dm').value;if(!mes)return alert('Informe o mês da 1ª cobrança.');
+    venc=lerDia($('dvd').value);if(!venc)return alert('Informe o dia do vencimento (1 a 31).');
+    a=lerAuto('dauto');if(a===null)return;
+  }
+  const tipo=cid?'Cartão de crédito':$('dtp').value,base={id:uid(),nome,tipo,cat,cartao:cid||null};
+  if(!cid){
+    base.venc=venc;
+    if(a.on){base.auto=true;base.autoConta=a.conta;base.autoDesde=today()}
+  }
+  if(ass)S.dividas.push({...base,kind:'assin',valor,inicio:mes,fim:null,pagos:{}});
+  else{
+    const n=parseInt($('dnp').value)||0,pg=parseInt($('dpg').value)||0;
+    if(n<1)return alert('Informe a quantidade de parcelas.');
+    if(pg<0||pg>=n)return alert('As parcelas já pagas devem ser menos que o total.');
+    S.dividas.push({...base,kind:'parc',total:valor,n,parcelas:parcelar(valor,n,mes,pg)});
+  }
+  processaAuto();save();render();
+}
+function delDivida(id){
+  const d=find('dividas',id);if(!confirm('Remover "'+d.nome+'"?'))return;
+  S.dividas=S.dividas.filter(x=>x.id!==id);save();render();
+}
+function cancelAss(id){
+  const d=find('dividas',id);
+  openModal(`<h3 style="margin-top:0">Cancelar assinatura</h3><div class="card"><b>${esc(d.nome)}</b><br><small>${fmt(d.valor)}/mês</small></div>
+  <small>Último mês a ser cobrado</small><input id="cm" type="month" value="${cur()}">
+  <p class="sub">Meses depois deste não serão mais cobrados. Cobranças já em aberto continuam até você pagar.</p>
+  <button class="add" onclick="execCancel('${id}')">Confirmar cancelamento</button><button class="add cancel" onclick="closeModal()">Voltar</button>`);
+}
+function execCancel(id){
+  const d=find('dividas',id),f=$('cm').value;
+  if(!f||f<d.inicio)return alert('Mês inválido.');
+  d.fim=f;save();closeModal();render();
+}
+function reativar(id){const d=find('dividas',id);d.fim=null;save();render()}
+
+/* pagamento (parcela, assinatura ou fatura): vira saída na categoria de cada dívida */
+function valorKey(did,pid){
+  const d=find('dividas',did);if(!d)return 0;
+  if(d.kind==='assin')return d.valor;
+  const p=d.parcelas.find(x=>x.id===pid);return p?p.valor:0;
+}
+function rotulo(d,pid){
+  if(d.kind==='assin')return mlabel(pid);
+  const i=d.parcelas.findIndex(p=>p.id===pid);return (i+1)+'/'+d.n;
+}
+function pagar(did,pid){
+  const d=find('dividas',did);
+  abrirPag([[did,pid]],'Pagamento: '+d.nome+' ('+rotulo(d,pid)+')',valorKey(did,pid));
+}
+function pagarFatura(cid,mes){
+  const c=find('cartoes',cid),L2=itens(d=>d.cartao===cid,ateM(mes)).filter(x=>x.mes===mes&&!x.paga);
+  abrirPag(L2.map(x=>[x.d.id,x.pid]),'Fatura '+c.nome+' · '+mlabel(mes),sumv(L2.map(x=>x.valor)));
+}
+function abrirPag(keys,titulo,valor){
+  PG={keys,titulo,valor};
+  const cats=[...new Set(keys.map(([did])=>{const d=find('dividas',did);return d?(d.cat||'Outros'):null}).filter(Boolean))];
+  openModal(`<h3 style="margin-top:0">Pagar</h3><div class="card"><b>${esc(titulo)}</b>
+  <div style="font-size:22px;font-weight:700">${fmt(valor)}</div>
+  <small>Entra nas Saídas em: ${esc(cats.join(', ')||'Outros')}${cats.length>1?' (uma saída por categoria)':''}</small></div>
+  <small>Pagar com</small><select id="pm" onchange="updPg()"><option value="conta">🏦 Conta bancária</option><option value="dinheiro">💵 Dinheiro</option></select>
+  <div id="pc"></div><input id="pd" type="date" value="${today()}">
+  <button class="add" onclick="execPag()">Confirmar pagamento</button><button class="add cancel" onclick="closeModal()">Cancelar</button>`);
+  updPg();
+}
+function updPg(){
+  $('pc').innerHTML=$('pm').value==='conta'?(S.contas.length?`<select id="pcs">${opts(S.contas,x=>esc(x.nome)+' ('+fmt(x.valor)+')')}</select>`:'<p class="warn">Cadastre antes uma conta bancária.</p>'):'';
+}
+/* paga cobranças: debita a conta/dinheiro, marca como pagas e registra uma saída por categoria */
+function liquida(keys,titulo,data,meio,cid,auto){
+  const g={};
+  keys.forEach(([did,pid])=>{const d=find('dividas',did);if(!d)return;const cat=d.cat||'Outros';(g[cat]=g[cat]||[]).push([did,pid])});
+  const cats=Object.keys(g);
+  cats.forEach(cat=>{
+    const ks=g[cat],val=sumv(ks.map(([a,b])=>valorKey(a,b)));
+    const m={id:uid(),tipo:'out',desc:cats.length>1?titulo+' · '+cat:titulo,valor:val,data,meio,cat,pgs:ks.map(([d,p])=>({d,p}))};
+    if(auto)m.autoDeb=1;
+    if(cid)m.ref=cid;
+    efeito(m,1);
+    ks.forEach(([did,pid])=>{
+      const d=find('dividas',did);
+      if(d.kind==='assin')d.pagos[pid]=data;
+      else{const p=d.parcelas.find(x=>x.id===pid);if(p){p.paga=true;p.dataPg=data}}
+    });
+    S.movs.push(m);
+  });
+}
+function execPag(){
+  const meio=$('pm').value,data=$('pd').value;
+  if(!data)return alert('Informe a data.');
+  if(data>today())return alert('A data do pagamento não pode ser futura. Pague no dia do vencimento ou marque o débito automático.');
+  let cid=null;
+  if(meio==='conta'){
+    if(!$('pcs'))return alert('Cadastre uma conta antes.');
+    cid=$('pcs').value;const c=find('contas',cid);
+    if(c.valor<PG.valor&&!confirm('O saldo da conta é menor que o valor. Continuar?'))return;
+  }else if(S.dinheiro<PG.valor&&!confirm('O saldo em dinheiro é menor que o valor. Continuar?'))return;
+  liquida(PG.keys,PG.titulo,data,meio,cid,false);
+  save();closeModal();render();
+}
+/* desfazer um pagamento: a cobrança volta a ficar em aberto e o débito automático não a refaz */
+function desfazPag(m){
+  (m.pgs||[]).forEach(({d:did,p:pid})=>{
+    const d=find('dividas',did);if(!d)return;
+    if(d.kind==='assin'){delete d.pagos[pid];d.noAuto=d.noAuto||{};d.noAuto[pid]=1}
+    else{const p=d.parcelas.find(x=>x.id===pid);if(p){p.paga=false;delete p.dataPg;p.noAuto=true}}
+  });
+}
+function desfazerPagDiv(did,pid){
+  const m=S.movs.find(x=>(x.pgs||[]).some(p=>p.d===did&&p.p===pid));
+  if(!m)return alert('Pagamento não encontrado.');
+  const n=m.pgs.length;
+  let msg=n>1?'Esta cobrança foi paga junto com outras ('+n+' cobranças no mesmo pagamento). Desfazer reverte o pagamento de todas elas e devolve o valor à conta. Continuar?':'Desfazer este pagamento? O valor volta para a conta ou para o dinheiro.';
+  if(m.autoDeb)msg+='\n\nO débito automático não será refeito para esta cobrança: pague manualmente quando quiser.';
+  if(!confirm(msg))return;
+  efeito(m,-1);desfazPag(m);S.movs=S.movs.filter(x=>x.id!==m.id);save();render();
+}
+const temPago=d=>d.kind==='assin'?Object.keys(d.pagos).length>0:d.parcelas.some(p=>p.paga);
+
+/* ---------- DÉBITO AUTOMÁTICO DE DÍVIDAS E CARTÕES ---------- */
+function noAutoItem(d,pid){
+  if(d.kind==='assin')return !!(d.noAuto&&d.noAuto[pid]);
+  const p=d.parcelas.find(x=>x.id===pid);return !!(p&&p.noAuto);
+}
+/* paga sozinho, na data de vencimento, as cobranças marcadas com débito automático.
+   Só vale a partir do dia em que o débito automático foi marcado (autoDesde). */
+function processaAuto(){
+  const hoje=today(),G={};
+  S.dividas.forEach(d=>{
+    const k=d.cartao?find('cartoes',d.cartao):null,cfg=k||d;
+    if(!cfg||!cfg.auto||!cfg.autoConta||!find('contas',cfg.autoConta))return;
+    itens(x=>x.id===d.id).forEach(x=>{
+      if(x.paga||noAutoItem(d,x.pid))return;
+      const du=dueOf(d,x.mes);
+      if(!du||du>hoje||du<(cfg.autoDesde||''))return;
+      const key=k?'k:'+k.id+':'+x.mes:'d:'+d.id+':'+x.pid;
+      (G[key]=G[key]||{k,d,x,du,conta:cfg.autoConta,ks:[]}).ks.push([d.id,x.pid]);
+    });
+  });
+  const keys=Object.keys(G);
+  keys.forEach(key=>{
+    const g=G[key];
+    const titulo=g.k?'Fatura '+g.k.nome+' · '+mlabel(g.x.mes):'Pagamento: '+g.d.nome+' ('+rotulo(g.d,g.x.pid)+')';
+    liquida(g.ks,titulo,g.du,'conta',g.conta,true);
+  });
+  return keys.length>0;
+}
+
+/* ---------- ENTRADAS RECORRENTES AUTOMÁTICAS + LANÇAMENTOS FUTUROS ---------- */
+function destOk(d,tp){
+  if(d==='dinheiro')return true;
+  const [k,id]=String(d||'').split(':');
+  if(k==='c')return !!find('contas',id);
+  if(k==='i'&&tp==='in'){const i=find('inv',id);return !!i&&i.tipo!=='Ações'}
+  return false;
+}
+const recCompleta=(c,tp)=>!!(c.rec&&c.valor>0&&c.dia&&c.dest&&destOk(c.dest,tp));
+const iniRec=dia=>dia>=parseInt(today().slice(8,10))?cur():addM(cur(),1);
+function destLabel(d){
+  if(d==='dinheiro')return '💵 Dinheiro';
+  const [k,id]=String(d||'').split(':');
+  if(k==='c'){const c=find('contas',id);return c?'🏦 '+c.nome:'(conta removida)'}
+  if(k==='i'){const i=find('inv',id);return i?'📈 '+i.nome:'(investimento removido)'}
+  return '';
+}
+function destOpts(){
+  return '<option value="dinheiro">💵 Dinheiro (em espécie)</option>'
+   +S.contas.map(c=>`<option value="c:${c.id}">🏦 ${esc(c.nome)}</option>`).join('')
+   +S.inv.filter(x=>x.tipo!=='Ações').map(i=>`<option value="i:${i.id}">📈 ${esc(i.nome)}</option>`).join('');
+}
+function aplicaDest(m,dest){
+  delete m.ref;delete m.rend;
+  const [k,id]=String(dest).split(':');
+  if(dest==='dinheiro')m.meio='dinheiro';
+  else if(k==='c'){m.meio='conta';m.ref=id}
+  else{m.meio='rend';m.rend=id}
+}
+/* cria as entradas recorrentes que faltam e realiza as futuras cuja data chegou */
+function processaRec(){
+  let mud=false;const hoje=today();
+  S.cats.in.forEach(c=>{
+    if(!recCompleta(c,'in')||!c.ini)return;
+    c.gen=c.gen||{};
+    for(let mes=c.ini;mes<=cur();mes=addM(mes,1)){
+      if(c.gen[mes])continue;
+      const m={id:uid(),tipo:'in',desc:c.nome,valor:c.valor,data:dataMes(mes,c.dia),cat:c.nome,rcat:c.id,rmes:mes};
+      aplicaDest(m,c.dest);
+      if(m.data>hoje)m.pend=true;else efeito(m,1);
+      S.movs.push(m);c.gen[mes]=1;mud=true;
+    }
+  });
+  S.movs.forEach(m=>{if(m.pend&&m.data<=hoje){delete m.pend;efeito(m,1);mud=true}});
+  return mud;
+}
+function atualizaAuto(){
+  const a=processaRec(),b=processaAuto();
+  if(!(a||b))return;
+  save();
+  const el=document.activeElement;
+  if(!locked&&route!=='editmov'&&!$('modal').innerHTML&&!(el&&/^(INPUT|SELECT|TEXTAREA)$/.test(el.tagName)))render();
+}
+
+/* ---------- CATEGORIAS ---------- */
+const catsDe=tp=>S.cats[tp]||[];
+const catLabel=c=>esc(c.nome)+(c.rec?' 🔁':'');
+function catOptions(tp){
+  return catsDe(tp).map(c=>`<option value="${c.id}">${catLabel(c)}</option>`).join('')
+   +(tp==='in'?'<option value="__rend">📈 Rendimento de investimento (ex.: poupança)</option>':'');
+}
+function catChange(tp){
+  const v=$('cat').value;
+  if(v!=='__rend'&&v!=='__cur'){const c=catsDe(tp).find(x=>x.id===v);if(c&&c.valor>0&&!$('v').value)$('v').value=c.valor}
+  updForm();
+}
+function refreshCats(tp,sel){
+  if($('cat')){
+    const prev=$('cat').value;$('cat').innerHTML=catOptions(tp);
+    const want=sel||prev;if([...$('cat').options].some(o=>o.value===want))$('cat').value=want;
+    updForm();
+  }
+}
+function fechaCats(){
+  closeModal();
+  if((route==='entradas'||route==='saidas')&&$('v')&&!$('v').value&&!$('d').value)render();
+}
+function modalCats(tp){
+  const L2=catsDe(tp);
+  openModal(`<div class="row"><h3 style="margin:0">Categorias de ${tp==='out'?'saídas':'entradas'}</h3><button class="ic" onclick="fechaCats()">✕</button></div>
+  <button class="add" onclick="formCat('${tp}','')">➕ Criar nova categoria</button>
+  <div style="margin-top:10px">${L2.map(c=>{
+    let sub='';
+    if(c.rec&&tp==='in'){
+      sub=recCompleta(c,'in')
+        ?`🔁 todo dia ${c.dia} · ${brl(c.valor)} · ${esc(destLabel(c.dest))}`
+        :'🔁 <span class="warn">não configurada: toque em ✎ para informar valor, dia e destino</span>';
+    }
+    return `<div class="row it"><div>${esc(c.nome)}<br><small>${sub}</small></div><div style="white-space:nowrap"><button class="ic" onclick="formCat('${tp}','${c.id}')">✎</button><button class="ic" onclick="delCat('${tp}','${c.id}')">🗑</button></div></div>`}).join('')||'<p class="sub">Nenhuma categoria.</p>'}</div>
+  <button class="add cancel" onclick="fechaCats()">Fechar</button>`);
+}
+function formCat(tp,id){
+  const c=id?catsDe(tp).find(x=>x.id===id):null;
+  openModal(`<div class="row"><h3 style="margin:0">${c?'Editar':'Nova'} categoria</h3><button class="ic" onclick="fechaCats()">✕</button></div>
+  <input id="cnn" placeholder="Nome (ex.: ${tp==='in'?'Freelance':'Academia'})" value="${c?esc(c.nome):''}">
+  ${tp==='in'?`<select id="cnr" onchange="updCat('in')"><option value="0">Não recorrente</option><option value="1">🔁 Recorrente (todo mês)</option></select>`:'<input type="hidden" id="cnr" value="0">'}
+  <input id="cnv" type="number" step="0.01" inputmode="decimal" placeholder="Valor usual (opcional)" value="${c&&c.valor>0?c.valor:''}">
+  <div id="cnx"></div>
+  <button class="add" onclick="salvaCat('${tp}','${id}')">Salvar categoria</button>
+  <button class="add cancel" onclick="modalCats('${tp}')">Voltar</button>`);
+  $('cnr').value=(tp==='in'&&c&&c.rec)?'1':'0';
+  updCat(tp);
+  if(tp==='in'&&c&&c.rec){if(c.dia)$('cnd').value=c.dia;if(c.dest&&[...$('cnt').options].some(o=>o.value===c.dest))$('cnt').value=c.dest}
+}
+function updCat(tp){
+  const rec=tp==='in'&&$('cnr').value==='1';
+  $('cnv').placeholder=rec?'Valor do lançamento (obrigatório)':'Valor usual (opcional)';
+  $('cnx').innerHTML=rec?`<small>Dia do mês em que o dinheiro entra (1 a 31)</small>
+  <input id="cnd" type="number" min="1" max="31" inputmode="numeric" placeholder="Dia do mês">
+  <small>Onde o dinheiro entra</small><select id="cnt">${destOpts()}</select>
+  <p class="sub">O lançamento é feito sozinho na data e entra direto no saldo da conta, do dinheiro ou do investimento escolhido. Se o dia deste mês já passou, o primeiro lançamento automático é no mês seguinte (para não duplicar algo que você já tenha lançado).</p>`:'';
+}
+function salvaCat(tp,id){
+  const nome=$('cnn').value.trim();if(!nome)return alert('Informe o nome da categoria.');
+  const rec=tp==='in'&&$('cnr').value==='1',valor=r2(num($('cnv').value));
+  const L2=catsDe(tp),ex=id?L2.find(c=>c.id===id):null;
+  const dup=L2.some(c=>c.id!==id&&c.nome.toLowerCase()===nome.toLowerCase())||(tp==='in'&&nome.toLowerCase()==='rendimento de investimento');
+  if(dup)return alert('Já existe uma categoria com esse nome.');
+  let dia=0,dest='';
+  if(rec){
+    dia=lerDia($('cnd').value);dest=$('cnt').value;
+    if(valor<=0||!dia||!dest)return alert('Para lançar automaticamente, informe o valor, o dia do mês e onde o dinheiro entra.');
+  }
+  let c=ex;
+  if(c){
+    if(c.nome!==nome){
+      S.movs.forEach(m=>{if(m.tipo===tp&&m.cat===c.nome)m.cat=nome});
+      if(tp==='out')S.dividas.forEach(d=>{if(d.cat===c.nome)d.cat=nome});
+    }
+    const eraRec=c.rec&&c.ini;
+    Object.assign(c,{nome,rec,valor,dia,dest});
+    if(!rec)delete c.ini;
+    else if(!eraRec)c.ini=iniRec(dia);
+  }else{
+    c={id:uid(),nome,rec,valor,dia,dest};
+    if(rec)c.ini=iniRec(dia);
+    S.cats[tp].push(c);
+  }
+  if(rec)S.movs.forEach(m=>{if(m.rcat===c.id&&m.pend){m.valor=c.valor;m.data=dataMes(m.rmes,c.dia);aplicaDest(m,c.dest)}});
+  processaRec();save();refreshCats(tp,c.id);modalCats(tp);
+}
+function delCat(tp,id){
+  const c=catsDe(tp).find(x=>x.id===id);
+  if(!c||!confirm('Remover a categoria "'+c.nome+'"? Os registros antigos continuam com esse nome.'))return;
+  S.cats[tp]=S.cats[tp].filter(x=>x.id!==id);save();refreshCats(tp);modalCats(tp);
+}
+
+/* ---------- ENTRADAS / SAÍDAS ---------- */
+function formCampos(tp){
+  const out=tp==='out';
+  return `<input type="hidden" id="ftp" value="${tp}">
+  <small style="display:block;margin-top:6px">Categoria</small>
+  <select id="cat" onchange="catChange('${tp}')">${catOptions(tp)}</select>
+  <button class="mini alt" onclick="modalCats('${tp}')">➕ Nova categoria</button>
+  <input id="d" placeholder="Descrição (opcional)">
+  <input id="v" type="number" step="0.01" inputmode="decimal" placeholder="Valor">
+  <input id="dt2" type="date" value="${today()}" onchange="hintSaida()"><small id="hf2"></small>
+  <div id="mw"><select id="meio" onchange="updForm()"><option value="dinheiro">💵 Dinheiro</option><option value="conta">🏦 Conta bancária</option>${out?'':'<option value="rend">📈 Investimento (poupança etc.)</option>'}</select></div>
+  <div id="ref"></div>`;
+}
+function telaMov(tp){
+  const mm=cur(),out=tp==='out';
+  const todos=S.movs.filter(m=>m.tipo===tp);
+  const ms=todos.filter(m=>m.data.slice(0,7)===mm);
+  const prox=out?[]:todos.filter(m=>m.pend&&m.data.slice(0,7)>mm);
+  const aRec=out?0:sumv(ms.filter(m=>m.pend).map(m=>m.valor));
+  const inc=out?[]:S.cats.in.filter(c=>c.rec&&!recCompleta(c,'in'));
+  return head(out?'Saídas':'Entradas')+`<div class="pad"><div class="card total"><small>Total do mês</small><div class="v" style="font-size:24px">${brl(totMov(ms))}</div>
+  ${aRec>0?`<small>A receber neste mês (lançamentos futuros): ${brl(aRec)}</small>`:''}</div>
+  ${out?'<p class="sub" style="margin:-4px 2px 12px">Aqui entram só gastos e pagamentos que já aconteceram. Compromissos futuros (pagamentos recorrentes, compras no Cartão, contas a vencer) são registrados em Dívidas e viram saída quando pagos.</p>':''}
+  ${inc.length?`<div class="card"><small class="warn">⚠ Recorrente sem configuração: ${inc.map(c=>esc(c.nome)).join(', ')}. Toque em ➕ Nova categoria e depois em ✎ para informar valor, dia e onde entra. Assim o lançamento passa a ser automático.</small></div>`:''}
+  <div class="card"><b>${out?'Novo gasto':'Nova entrada'}</b>${formCampos(tp)}
+  <button class="add" onclick="addMov('${tp}')">Registrar</button></div>
+  <h3>Registros deste mês</h3>${listaMov(ms)}
+  ${prox.length?'<h3>Próximos meses</h3>'+listaMov(prox,1):''}${btnCons()}</div>`;
+}
+function hintSaida(){
+  const tp=$('ftp')?$('ftp').value:'';
+  const h2=$('hf2');
+  if(h2){
+    const fu=$('dt2')&&$('dt2').value>today();
+    if(!fu){h2.textContent='';h2.className=''}
+    else if(tp==='in'){h2.textContent='Data futura: fica como lançamento futuro e só entra nos saldos nessa data.';h2.className=''}
+    else{h2.textContent='Saída no futuro: registre como Dívida (tela Dívidas).';h2.className='warn'}
+  }
+}
+function updForm(){
+  const rendCat=$('cat').value==='__rend';
+  if(editMode==='info'){$('mw').style.display='none';$('ref').innerHTML='';hintSaida();return}
+  $('mw').style.display=rendCat?'none':'';
+  const meio=$('meio').value,rend=rendCat||meio==='rend';
+  const keep=['refs','refi'].map(i=>[i,$(i)?$(i).value:null]);
+  let h='';
+  if(rend){const L2=S.inv.filter(x=>x.tipo!=='Ações');
+    h=L2.length?`<small>Em qual investimento:</small><select id="refi">${opts(L2)}</select>`:'<p class="warn">Cadastre antes um investimento (que não seja Ações).</p>'}
+  else if(meio==='conta')h=S.contas.length?`<select id="refs">${opts(S.contas)}</select>`:'<p class="warn">Cadastre antes uma conta bancária.</p>';
+  $('ref').innerHTML=h;
+  keep.forEach(([i,v])=>{const el=$(i);if(v!==null&&el&&(!el.options||[...el.options].some(o=>o.value===v)))el.value=v});
+  hintSaida();
+}
+/* lê só categoria, descrição, valor e data */
+function lerBasico(tp,old){
+  const catv=$('cat').value;let catNome;
+  if(catv==='__rend')catNome='Rendimento de investimento';
+  else if(catv==='__cur')catNome=old?old.cat:'Outros';
+  else{const c=catsDe(tp).find(x=>x.id===catv);if(!c){alert('Escolha uma categoria.');return null}catNome=c.nome}
+  const desc=$('d').value.trim()||catNome,valor=r2(num($('v').value)),data=$('dt2').value;
+  if(valor<=0||!data){alert('Preencha valor e data.');return null}
+  return{catv,catNome,desc,valor,data};
+}
+/* lê o formulário inteiro e devolve o registro */
+function lerForm(tp,old){
+  const b=lerBasico(tp,old);if(!b)return null;
+  const meio=$('meio').value;
+  if(tp==='out'&&b.data>today()){
+    alert('Saída no futuro: registre como Dívida (tela Dívidas). Aqui só entram saídas que já aconteceram.');
+    return null;
+  }
+  const m={id:old?old.id:uid(),tipo:tp,desc:b.desc,valor:b.valor,data:b.data,cat:b.catNome};
+  if(old&&old.rcat){m.rcat=old.rcat;m.rmes=old.rmes}
+  if(b.catv==='__rend'||meio==='rend'){
+    if(!$('refi')){alert('Selecione um investimento.');return null}
+    m.rend=$('refi').value;m.meio='rend';
+  }else{
+    m.meio=meio;
+    if(meio==='conta'){if(!$('refs')){alert('Cadastre uma conta antes.');return null}m.ref=$('refs').value}
+  }
+  return m;
+}
+function addMov(tp){
+  const m=lerForm(tp);if(!m)return;
+  if(tp==='in'&&fut(m))m.pend=true;else efeito(m,1);
+  S.movs.push(m);save();render();
+}
+function viaMov(m){
+  let via;
+  if(m.rend)via='Investimento → '+(find('inv',m.rend)?.nome||'(removido)');
+  else if(m.meio==='dinheiro')via='Dinheiro';
+  else if(m.meio==='conta')via='Conta: '+(find('contas',m.ref)?.nome||'(removida)');
+  else via=m.meio||'';
+  if(m.rcat)via+=' · 🔁 automático';
+  if(m.autoDeb)via+=' · 🔁 débito automático';
+  if(m.auto)via+=' · automático (já incluso no resgate)';
+  return via;
+}
+function listaMov(ms,asc){
+  if(!ms.length)return '<p class="sub">Nenhum registro.</p>';
+  return ms.slice().sort((a,b)=>asc?a.data.localeCompare(b.data):b.data.localeCompare(a.data)).map(m=>{
+    const cls=m.pend?'':m.tipo==='in'?'pos':'neg';
+    const fu=m.pend?`<br><small class="warn">⏳ Lançamento futuro - ${fdate(m.data)}</small>`:'';
+    return `<div class="card row${m.pend?' muted':''}"><div><b>${esc(m.desc)}</b>${fu}<br><small>${fdate(m.data)} · ${esc(m.cat||'')} · ${esc(viaMov(m))}</small></div>
+    <div style="white-space:nowrap"><b class="${cls}">${m.tipo==='in'?'+':'−'}${brl(m.valor)}</b><button class="ic" onclick="editaMov('${m.id}')">✎</button><button class="ic" onclick="delMov('${m.id}')">🗑</button></div></div>`}).join('');
+}
+function delMov(id){
+  const m=S.movs.find(x=>x.id===id);if(!m)return;
+  if(!confirm('Excluir o registro? Os saldos serão revertidos.'))return;
+  if(!m.pend)efeito(m,-1);
+  desfazPag(m);
+  S.movs=S.movs.filter(x=>x.id!==id);save();render();
+}
+
+/* ---------- EDIÇÃO DE REGISTROS ---------- */
+function modoEdit(m){
+  if(m.pgs)return 'pag';
+  if(m.sem)return 'info';
+  return 'full';
+}
+function editaMov(id){
+  const m=find('movs',id);if(!m)return;
+  editId=id;editTp=m.tipo;go('editmov');
+}
+function prefillEdit(){
+  const m=find('movs',editId);if(!m)return;
+  const tp=m.tipo;let cv;
+  if(tp==='in'&&m.cat==='Rendimento de investimento')cv='__rend';
+  else{
+    const c=catsDe(tp).find(x=>x.nome===m.cat);
+    if(c)cv=c.id;
+    else{cv='__cur';const o=document.createElement('option');o.value='__cur';o.textContent=m.cat+' (categoria removida)';$('cat').appendChild(o)}
+  }
+  $('cat').value=cv;
+  $('d').value=m.desc;$('v').value=m.valor;$('dt2').value=m.data;
+  $('meio').value=m.meio==='rend'?(cv==='__rend'?'dinheiro':'rend'):m.meio;
+  updForm();
+  if(m.rend&&$('refi'))$('refi').value=m.rend;
+  if(m.meio==='conta'&&$('refs'))$('refs').value=m.ref;
+  hintSaida();
+  if(editMode==='pag')$('v').disabled=true;
+}
+function salvaEdit(){
+  const old=find('movs',editId);if(!old)return go(editTp==='in'?'entradas':'saidas');
+  const mode=modoEdit(old),tp=old.tipo;
+  if(mode==='info'){
+    const b=lerBasico(tp,old);if(!b)return;
+    old.desc=b.desc;old.cat=b.catNome;old.valor=b.valor;old.data=b.data;
+    save();return back();
+  }
+  const nm=lerForm(tp,old);if(!nm)return;
+  if(mode==='pag'){
+    if(nm.meio==='rend'){alert('Um pagamento só pode sair de uma conta ou do dinheiro.');return}
+    efeito(old,-1);
+    old.desc=nm.desc;old.cat=nm.cat;old.data=nm.data;old.meio=nm.meio;
+    if(nm.meio==='conta')old.ref=nm.ref;else delete old.ref;
+    efeito(old,1);save();return back();
+  }
+  const i=S.movs.findIndex(x=>x.id===old.id);
+  if(!old.pend)efeito(old,-1);
+  if(tp==='in'&&fut(nm))nm.pend=true;else efeito(nm,1);
+  S.movs[i]=nm;save();back();
+}
+/* apagar tudo: só o tema é mantido (o nome também é apagado) */
+function apagar(){
+  if(confirm('Apagar TODOS os dados?')&&confirm('Tem certeza? Esta ação não pode ser desfeita.')){
+    const t=S.tema;S=DEF();S.tema=t;save();go('home');
+  }
+}
+
+/* ---------- GRÁFICOS (pizza e barras em SVG, funcionam offline) ---------- */
+const PAL=['#4ea8de','#8fd6a4','#e3c37a','#e88f8f','#b79ced','#6fd3c8','#f2a65a','#d985b8'];
+const CT_APP=()=>({hide:S.hide,bg:'var(--card)',tx:'var(--tx)',mut:'var(--mut)',ln:'var(--bd)'});
+const CT_EXP={hide:false,bg:'#fff',tx:'#16302b',mut:'#64748b',ln:'#cbd5d1'};
+const mshort=ym=>{const [y,m]=ym.split('-');return new Date(y,m-1,1).toLocaleDateString('pt-BR',{month:'short'}).replace('.','')};
+function fk(v){
+  const a=Math.abs(v),s=v<0?'-':'';
+  if(a>=1e6)return s+(a/1e6).toFixed(1).replace('.',',')+' mi';
+  if(a>=1e3)return s+Math.round(a/1e3)+' mil';
+  return s+Math.round(a);
+}
+function pieHTML(data,o){
+  let P=data.filter(x=>x.v>0.004).sort((a,b)=>b.v-a.v);
+  if(!P.length)return '<p class="sub" style="margin:4px 0">Sem dados para o gráfico neste período.</p>';
+  if(P.length>8){const rest=P.slice(7);P=P.slice(0,7).concat([{l:'Demais ('+rest.length+')',v:sumv(rest.map(x=>x.v)),dem:1}])}
+  const tot=sumv(P.map(x=>x.v)),C=100,R=86,RH=52;
+  const mv=v=>o.hide?'R$ ••••':fmt(v);
+  const col=i=>P[i].dem?'#8f8f8f':PAL[i];
+  let ang=-Math.PI/2,sl='';
+  if(P.length===1)sl=`<circle cx="${C}" cy="${C}" r="${R}" style="fill:${col(0)}"/>`;
+  else P.forEach((x,i)=>{
+    const a=x.v/tot*2*Math.PI,a2=ang+a;
+    const x1=(C+R*Math.cos(ang)).toFixed(2),y1=(C+R*Math.sin(ang)).toFixed(2),x2=(C+R*Math.cos(a2)).toFixed(2),y2=(C+R*Math.sin(a2)).toFixed(2);
+    sl+=`<path d="M${C} ${C}L${x1} ${y1}A${R} ${R} 0 ${a>Math.PI?1:0} 1 ${x2} ${y2}Z" style="fill:${col(i)};stroke:${o.bg};stroke-width:2"/>`;
+    ang=a2;
+  });
+  const tt=mv(tot),fs=tt.length>13?9:11;
+  const svg=`<svg viewBox="0 0 200 200" style="width:100%;max-width:230px;display:block;margin:0 auto 8px" role="img" aria-label="Gráfico de pizza">${sl}
+  <circle cx="${C}" cy="${C}" r="${RH}" style="fill:${o.bg}"/>
+  <text x="${C}" y="${C-5}" text-anchor="middle" style="fill:${o.mut};font-size:10px">Total</text>
+  <text x="${C}" y="${C+11}" text-anchor="middle" style="fill:${o.tx};font-size:${fs}px;font-weight:600">${tt}</text></svg>`;
+  const leg=P.map((x,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:3px 0;font-size:13px;color:${o.tx}">
+    <span style="width:10px;height:10px;border-radius:50%;background:${col(i)};flex:none"></span>
+    <span style="flex:1;min-width:0;overflow-wrap:anywhere">${esc(x.l)}</span>
+    <span style="white-space:nowrap">${mv(x.v)}</span>
+    <span style="width:48px;text-align:right;color:${o.mut}">${(x.v/tot*100).toFixed(1).replace('.',',')}%</span></div>`).join('');
+  return svg+leg;
+}
+function barHTML(data,o){
+  if(!data.length)return '<p class="sub" style="margin:4px 0">Sem dados para o gráfico neste período.</p>';
+  const W=320,H=190,pt=18,pb=34,n=data.length,gw=(W-12)/n,bw=Math.min(30,gw*.7);
+  const vals=data.map(x=>x.v),lo=Math.min(0,...vals),hi=Math.max(0,...vals),rg=(hi-lo)||1,ih=H-pt-pb;
+  const Y=v=>pt+(hi-v)/rg*ih,y0=Y(0);
+  let s=`<line x1="6" x2="${W-6}" y1="${y0.toFixed(1)}" y2="${y0.toFixed(1)}" style="stroke:${o.ln};stroke-width:1"/>`;
+  data.forEach((x,i)=>{
+    const cx=6+gw*i+gw/2,top=Y(Math.max(x.v,0)),bot=Y(Math.min(x.v,0)),h=Math.max(bot-top,1);
+    s+=`<rect x="${(cx-bw/2).toFixed(1)}" y="${top.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="3" style="fill:${x.sel?'#8fd6a4':'#4ea8de'}"/>`;
+    if(!o.hide)s+=`<text x="${cx.toFixed(1)}" y="${(x.v>=0?top-3:bot+9).toFixed(1)}" text-anchor="middle" style="fill:${o.tx};font-size:7px">${fk(x.v)}</text>`;
+    s+=`<text x="${cx.toFixed(1)}" y="${H-pb+12}" text-anchor="middle" style="fill:${o.tx};font-size:8px">${esc(x.l)}</text>
+    <text x="${cx.toFixed(1)}" y="${H-pb+22}" text-anchor="middle" style="fill:${o.mut};font-size:7px">${esc(x.y)}</text>`;
+  });
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;display:block" role="img" aria-label="Gráfico de barras">${s}</svg>`;
+}
+const chartHTML=(c,o)=>c.kind==='bar'?barHTML(c.data,o):pieHTML(c.data,o);
+function chartsTela(r){
+  return (r.charts||[]).map(c=>`<div class="card"><b>${esc(c.h)}</b><div style="margin-top:8px">${chartHTML(c,CT_APP())}</div>${c.nota?`<p class="sub" style="margin:6px 0 0">${esc(c.nota)}</p>`:''}</div>`).join('');
+}
+const totSnap=sn=>r2(sumv(sn.contas.map(c=>c.v))+sn.din+sumv(sn.inv.map(i=>i.v)));
+function serieMeses(mes,n){
+  const out=[];
+  for(let i=n-1;i>=0;i--){
+    const k=addM(mes,-i),sn=snapDe(k);
+    if(!sn)continue;
+    out.push({l:mshort(k),y:k.slice(2,4),v:totSnap(sn),sel:k===mes});
+  }
+  return out;
+}
+const notaNeg=list=>list.some(x=>x.v<0)?'Valores negativos (por exemplo, conta no vermelho) não aparecem no gráfico.':'';
+
+/* ---------- RELATÓRIOS ---------- */
+function mudaMesH(i){mesH=addM(mesH,i);render()}
+function setMesH(v){if(v){mesH=v;render()}}
+function setTab(t){tabH=t;render()}
+const SEM_SNAP='Sem registro de saldos neste mês. O app passou a guardar os saldos mensais a partir da primeira vez que foi aberto com a versão que guarda o histórico.';
+function obsSnap(mes,sn){
+  if(!sn)return '';
+  if(sn.est)return 'Mês sem uso do app: os valores repetem o último registro anterior.';
+  return mes===cur()?'Mês em andamento: valores atuais.':'Saldos do fim do mês = saldos do último dia em que o app foi usado neste mês.';
+}
+const nts=futv=>futv>0?[{t:'+ {v} a receber (lançamento futuro)',v:futv}]:[];
+function agrupaCat(ms,tp){
+  const mp={};
+  ms.filter(m=>m.tipo===tp).forEach(m=>{const k=m.cat||'Outros';(mp[k]=mp[k]||[]).push(m)});
+  return Object.keys(mp).map(cat=>{
+    const its=mp[cat].slice().sort((a,b)=>b.data.localeCompare(a.data));
+    return{cat,its,
+      total:sumv(its.filter(m=>!m.pend).map(m=>m.valor)),
+      fut:sumv(its.filter(m=>m.pend).map(m=>m.valor))};
+  }).sort((a,b)=>(b.total+b.fut)-(a.total+a.fut));
+}
+function linhasCat(ms,tp,tot){
+  const g=agrupaCat(ms,tp);
+  if(!g.length)return[{a:'Nenhum registro neste mês.'}];
+  return g.map(x=>({a:x.cat,v:x.total,notes:nts(x.fut),
+    sub:x.its.map(m=>({a:fdate(m.data)+' · '+m.desc+' · '+viaMov(m)+(m.pend?' · lançamento futuro':''),v:m.valor,mut:!!m.pend}))}))
+    .concat([{a:'Total',v:tot,total:1}]);
+}
+function relRes(mes){
+  const ms=S.movs.filter(m=>m.data.slice(0,7)===mes);
+  const ent=ms.filter(m=>m.tipo==='in'),sai=ms.filter(m=>m.tipo==='out');
+  const E=totMov(ent),Sd=totMov(sai),futE=sumv(ent.filter(m=>m.pend).map(m=>m.valor));
+  const rows=[{a:'Entradas',v:E,c:'pos'},{a:'Saídas',v:Sd,c:'neg'},{a:'Saldo do mês',v:r2(E-Sd),total:1}];
+  if(futE>0)rows.push({a:'A receber (lançamentos futuros, não somados acima)',v:futE});
+  const cats=tp=>{const g=agrupaCat(ms,tp);return g.length?g.map(x=>({a:x.cat,v:x.total,notes:nts(x.fut)})):[{a:'Nenhum registro neste mês.'}]};
+  return{titulo:'Resumo · '+mlabel(mes),nome:'resumo',obs:'',secs:[
+    {h:'Resumo do mês',rows},
+    {h:'Entradas por categoria',rows:cats('in')},
+    {h:'Saídas por categoria',rows:cats('out')}]};
+}
+function relLista(mes,tp){
+  const ms=S.movs.filter(m=>m.data.slice(0,7)===mes),tot=totMov(ms.filter(m=>m.tipo===tp));
+  const nome=tp==='in'?'Entradas':'Saídas';
+  const g=agrupaCat(ms,tp);
+  return{titulo:nome+' · '+mlabel(mes),nome:tp==='in'?'entradas':'saidas',obs:'',
+    charts:[{kind:'pie',h:nome+' por categoria',data:g.map(x=>({l:x.cat,v:x.total}))}],
+    secs:[
+    {h:'Total do mês',rows:[{a:'Total de '+nome.toLowerCase(),v:tot,c:tp==='in'?'pos':'neg'}]},
+    {h:nome+' por categoria',rows:linhasCat(ms,tp,tot)}]};
+}
+function relDiv(mes){
+  const its=itens(()=>true,ateM(mes)).filter(x=>x.mes===mes);
+  const st=x=>x.paga?' · paga':(atrasada(x)?' · EM ATRASO':' · em aberto');
+  const lin=x=>({a:x.d.nome+' ('+(x.d.cat||'Outros')+') · '+(x.d.kind==='assin'?'assinatura/recorrente':'parcela '+(x.i+1)+'/'+x.d.n)+(!x.d.cartao&&vDia(x.d)?' · vence '+vData(mes,vDia(x.d)):'')+st(x),v:x.valor,mut:x.paga});
+  const tot=sumv(its.map(x=>x.valor)),ab=sumv(its.filter(x=>!x.paga).map(x=>x.valor)),atrM=sumv(its.filter(atrasada).map(x=>x.valor));
+  const r=resumo(()=>true);
+  const cartRows=S.cartoes.map(k=>{
+    const L2=its.filter(x=>x.d.cartao===k.id);
+    if(!L2.length)return{a:k.nome+' · sem cobranças neste mês'};
+    const nt=[{t:'em aberto: {v}',v:sumv(L2.filter(x=>!x.paga).map(x=>x.valor))}];
+    const at=sumv(L2.filter(atrasada).map(x=>x.valor));
+    if(at>0)nt.push({t:'EM ATRASO: {v}',v:at});
+    return{a:k.nome+(k.venc?' · vence '+vData(mes,k.venc):'')+(k.auto?' · débito automático':''),v:sumv(L2.map(x=>x.valor)),notes:nt,sub:L2.map(lin)};
+  });
+  const outras=its.filter(x=>!x.d.cartao).map(x=>({a:lin(x).a+(x.d.auto?' · débito automático':''),v:x.valor,mut:x.paga}));
+  const pg=S.movs.filter(m=>m.pgs&&m.data.slice(0,7)===mes).sort((a,b)=>a.data.localeCompare(b.data));
+  const pgRows=pg.length?[{a:'Pagamentos efetuados no mês',v:sumv(pg.map(m=>m.valor)),sub:pg.map(m=>({a:fdate(m.data)+' · '+m.desc+' ('+(m.cat||'Outros')+')'+(m.autoDeb?' · débito automático':' · pago pelo app'),v:m.valor}))}]:[{a:'Nenhum pagamento neste mês.'}];
+  /* gráfico: cada cartão e cada uma das outras dívidas, nas cobranças do mês */
+  const mp={};
+  its.filter(x=>!x.d.cartao).forEach(x=>{(mp[x.d.id]=mp[x.d.id]||{l:x.d.nome,v:0}).v+=x.valor});
+  const dataPie=S.cartoes.map(k=>({l:'💳 '+k.nome,v:sumv(its.filter(x=>x.d.cartao===k.id).map(x=>x.valor))}))
+    .concat(Object.keys(mp).map(id=>({l:mp[id].l,v:r2(mp[id].v)})));
+  return{titulo:'Dívidas e cartões · '+mlabel(mes),nome:'dividas-cartoes',
+    obs:'A situação paga/em aberto/em atraso é a atual. Quando pagas, as dívidas entram em Saídas na categoria indicada entre parênteses.',
+    charts:[{kind:'pie',h:'Cobranças de '+mlabel(mes)+' por cartão e dívida',data:dataPie}],
+    secs:[
+    {h:'Resumo do mês',rows:[
+      {a:'Cobranças do mês (cartões e dívidas)',v:tot},
+      {a:'Pagas',v:r2(tot-ab),c:'pos'},
+      {a:'Em aberto',v:ab,c:'neg'},
+      {a:'Em atraso (neste mês)',v:atrM,c:atrM>0?'neg':''},
+      {a:'Total em aberto hoje (todas as cobranças)',v:r.total,total:1},
+      {a:'Total em atraso hoje',v:r.atraso,c:r.atraso>0?'neg':''},
+      {a:'Assinaturas e recorrentes ativos (por mês)',v:r.ass}]},
+    {h:'Cartões de crédito',rows:cartRows.length?cartRows:[{a:'Nenhum cartão cadastrado.'}]},
+    {h:'Outras dívidas (financiamentos, aluguel etc.)',rows:outras.length?outras:[{a:'Nenhuma cobrança neste mês.'}]},
+    {h:'Pagamentos efetuados',rows:pgRows}]};
+}
+function relCont(mes){
+  const ym=d=>d.slice(0,7)===mes,sn=snapDe(mes);
+  const nomeC=id=>{const c=find('contas',id);return c?c.nome:'(conta removida)'};
+  const grupo=(nome,kind,id,saldo)=>{
+    const L2=[];
+    S.movs.forEach(m=>{
+      if(m.sem||m.pend||m.meio==='cartao'||m.meio==='rend'||!ym(m.data))return;
+      if(kind==='c'?(m.meio==='conta'&&m.ref===id):m.meio==='dinheiro'){
+        const pg=!!m.pgs;
+        L2.push({d:m.data,a:(pg?'Pagamento':m.tipo==='in'?'Entrada':'Saída')+' · '+m.desc+(m.cat?' ('+m.cat+')':'')+(m.autoDeb?' · débito automático':''),v:m.tipo==='in'?m.valor:-m.valor});
+      }
+    });
+    S.transf.forEach(t=>{
+      if(!ym(t.data))return;
+      if(kind==='c'){
+        if(t.de===id)L2.push({d:t.data,a:t.tipo==='sq'?'Saque (para dinheiro em espécie)':'Transferência para '+nomeC(t.para),v:-t.valor});
+        if(t.tipo==='tr'&&t.para===id)L2.push({d:t.data,a:'Transferência de '+nomeC(t.de),v:t.valor});
+      }else if(t.tipo==='sq')L2.push({d:t.data,a:'Saque de '+nomeC(t.de),v:t.valor});
+    });
+    if(kind==='c')S.ops.forEach(o=>{
+      if(!ym(o.data))return;const c=opConta(o);
+      if(c&&c.id===id)L2.push({d:o.data,a:(o.dir==='inv'?'Aplicação em ':'Resgate de ')+o.inv,v:o.dir==='inv'?-o.total:o.total});
+    });
+    L2.sort((a,b)=>a.d.localeCompare(b.d));
+    return{nome,L:L2,saldo};
+  };
+  const gs=S.contas.map(c=>grupo(c.nome,'c',c.id,sn?(sn.contas.find(z=>z.n===c.nome)||{}).v:undefined))
+    .concat([grupo('Dinheiro (em espécie)','d',null,sn?sn.din:undefined)]);
+  const rows=gs.map(g=>{
+    const net=sumv(g.L.map(x=>x.v));
+    const sub=g.L.map(x=>({a:fdate(x.d)+' · '+x.a,v:x.v}));
+    if(g.saldo!=null)sub.push({a:'Saldo no fim do mês',v:g.saldo,mut:true});
+    if(!sub.length)return{a:g.nome+' · sem movimentações'};
+    return{a:g.nome+(g.L.length?'':' · sem movimentações'),v:g.L.length?net:undefined,c:net>=0?'pos':'neg',sub};
+  });
+  const base=S.movs.filter(m=>!m.sem&&!m.pend&&m.meio!=='cartao'&&m.meio!=='rend'&&ym(m.data));
+  const trs=S.transf.filter(t=>ym(t.data)),ops=S.ops.filter(o=>ym(o.data));
+  /* gráfico: saldo de cada conta e do dinheiro em espécie (no fim do mês escolhido) */
+  const dataPie=sn?sn.contas.map(c=>({l:c.n,v:c.v})).concat([{l:'Dinheiro (em espécie)',v:sn.din}]):[];
+  return{titulo:'Contas bancárias · '+mlabel(mes),nome:'contas',obs:obsSnap(mes,sn),
+    charts:[{kind:'pie',h:mes===cur()?'Saldo atual das contas e do dinheiro em espécie':'Saldo das contas e do dinheiro em espécie no fim de '+mlabel(mes),data:dataPie,nota:sn?notaNeg(dataPie):SEM_SNAP}],
+    secs:[
+    {h:'Resumo das movimentações',rows:[
+      {a:'Entradas recebidas',v:sumv(base.filter(m=>m.tipo==='in').map(m=>m.valor)),c:'pos'},
+      {a:'Saídas',v:sumv(base.filter(m=>m.tipo==='out'&&!m.pgs).map(m=>m.valor)),c:'neg'},
+      {a:'Pagamentos de dívidas',v:sumv(base.filter(m=>m.tipo==='out'&&m.pgs).map(m=>m.valor)),c:'neg'},
+      {a:'Transferências entre contas',v:sumv(trs.filter(t=>t.tipo==='tr').map(t=>t.valor))},
+      {a:'Saques (conta → dinheiro)',v:sumv(trs.filter(t=>t.tipo==='sq').map(t=>t.valor))},
+      {a:'Aplicados em investimentos',v:sumv(ops.filter(o=>o.dir==='inv').map(o=>o.total))},
+      {a:'Resgatados de investimentos',v:sumv(ops.filter(o=>o.dir==='res').map(o=>o.total))}]},
+    {h:'Movimentação por conta',rows:rows.length?rows:[{a:'Nenhuma conta cadastrada.'}]}]};
+}
+function invRows(sn){
+  return grupoTipos(sn.inv,x=>x.t).map(g=>({a:g.t,v:sumv(g.l.map(i=>i.v)),
+    sub:g.l.map(i=>({a:i.n+(i.t==='Ações'?' · '+i.q+' un.':''),v:i.v}))}))
+    .concat([{a:'Total em reservas/investimentos',v:sumv(sn.inv.map(i=>i.v)),total:1}]);
+}
+function relInv(mes){
+  const sn=snapDe(mes),secs=[];
+  secs.push({h:'Posição no fim do mês',rows:sn?(sn.inv.length?invRows(sn):[{a:'Nenhum investimento registrado.'}]):[{a:SEM_SNAP}]});
+  const ops=S.ops.filter(o=>o.data.slice(0,7)===mes).sort((a,b)=>a.data.localeCompare(b.data));
+  const ap=ops.filter(o=>o.dir==='inv'),rs=ops.filter(o=>o.dir==='res'),rd=S.movs.filter(m=>m.rend&&!m.pend&&m.data.slice(0,7)===mes);
+  const op=o=>({a:fdate(o.data)+' · '+o.inv+' · '+(o.dir==='inv'?'de ':'para ')+o.conta+(o.q?' · '+o.q+' un.':'')+(o.ganho?' · '+(o.ganho>0?'ganho':'perda'):''),v:o.total});
+  const mv=[{a:'Aplicações',v:sumv(ap.map(o=>o.total)),sub:ap.map(op)},
+    {a:'Resgates',v:sumv(rs.map(o=>o.total)),sub:rs.map(op)},
+    {a:'Entradas em investimentos (rendimentos etc.)',v:sumv(rd.map(m=>m.valor)),sub:rd.map(m=>({a:fdate(m.data)+' · '+m.desc+' · '+viaMov(m),v:m.valor}))}].filter(x=>x.sub.length);
+  if(rs.some(o=>o.q)){const g=sumv(rs.map(o=>o.ganho||0));mv.push({a:'Ganho/perda realizado em ações',v:g,c:g>=0?'pos':'neg',total:1})}
+  secs.push({h:'Movimentações no mês',rows:mv.length?mv:[{a:'Nenhuma movimentação neste mês.'}]});
+  /* gráfico: investimentos por tipo (posição no fim do mês escolhido) */
+  const dataPie=sn?grupoTipos(sn.inv,x=>x.t).map(g=>({l:g.t,v:sumv(g.l.map(i=>i.v))})):[];
+  return{titulo:'Investimentos · '+mlabel(mes),nome:'investimentos',obs:obsSnap(mes,sn),
+    charts:[{kind:'pie',h:'Investimentos por tipo'+(mes===cur()?'':' (fim de '+mlabel(mes)+')'),data:dataPie,nota:sn?notaNeg(dataPie):SEM_SNAP}],secs};
+}
+function relPat(mes){
+  const sn=snapDe(mes),titulo='Patrimônio · '+mlabel(mes);
+  const serie=serieMeses(mes,12);
+  const barra={kind:'bar',h:'Patrimônio ao longo dos meses',data:serie,
+    nota:'Até '+mlabel(mes)+', no máximo 12 meses. A barra verde é o mês escolhido. Meses sem registro de saldos não aparecem.'};
+  if(!sn)return{titulo,nome:'patrimonio',obs:'',
+    charts:[{kind:'pie',h:'Composição do patrimônio',data:[],nota:SEM_SNAP},barra],
+    secs:[{h:'Patrimônio',rows:[{a:SEM_SNAP}]}]};
+  const tc=sumv(sn.contas.map(c=>c.v)),ti=sumv(sn.inv.map(i=>i.v)),td=r2(sn.din);
+  const dataPie=[{l:'Contas bancárias',v:tc},{l:'Dinheiro (em espécie)',v:td},{l:'Reservas/Investimentos',v:ti}];
+  return{titulo,nome:'patrimonio',obs:obsSnap(mes,sn),
+    charts:[{kind:'pie',h:'Composição do patrimônio total',data:dataPie,nota:notaNeg(dataPie)},barra],
+    secs:[
+    {h:'Contas bancárias',rows:sn.contas.length?sn.contas.map(c=>({a:c.n,v:c.v})).concat([{a:'Total em contas',v:tc,total:1}]):[{a:'Nenhuma conta registrada.'}]},
+    {h:'Reservas/Investimentos',rows:sn.inv.length?invRows(sn):[{a:'Nenhum investimento registrado.'}]},
+    {h:'Dinheiro (em espécie)',rows:[{a:'Dinheiro em espécie',v:td}]},
+    {h:'Patrimônio total',rows:[{a:'Contas bancárias',v:tc},{a:'Reservas/Investimentos',v:ti},{a:'Dinheiro (em espécie)',v:td},{a:'Patrimônio total',v:r2(tc+ti+td),total:1}]}]};
+}
+const rel=(tipo,mes)=>({res:relRes,ent:m=>relLista(m,'in'),sai:m=>relLista(m,'out'),div:relDiv,con:relCont,inv:relInv,pat:relPat}[tipo]||relRes)(mes);
+
+const mny=(v,h)=>typeof v==='number'?(h&&S.hide?'R$ ••••':fmt(v)):'';
+function rowTela(x){
+  const val=x.v!=null?`<b class="${x.c||''}">${mny(x.v,1)}</b>`:'';
+  const nota=x.notes&&x.notes.length?'<br><small>'+x.notes.map(n=>esc(n.t).replace('{v}',mny(n.v,1))).join(' · ')+'</small>':'';
+  if(x.sub){
+    return `<details class="grp"><summary><span>${esc(x.a)}${nota}</span>${val}</summary>`+
+      x.sub.map(s=>`<div class="row it" style="${s.mut?'opacity:.6;font-style:italic':''}"><small style="color:var(--tx)">${esc(s.a)}</small><span style="white-space:nowrap">${mny(s.v,1)}</span></div>`).join('')+'</details>';
+  }
+  return `<div class="row${x.total?' it':''}" style="padding:4px 0"><span style="${x.total?'font-weight:700':''}">${esc(x.a)}${nota}</span>${val}</div>`;
+}
+function relTela(r){
+  return (r.obs?`<p class="sub">${esc(r.obs)}</p>`:'')+chartsTela(r)+r.secs.map(s=>`<div class="card"><b>${esc(s.h)}</b><div style="margin-top:6px">${s.rows.map(rowTela).join('')}</div></div>`).join('');
+}
+function relHTML(r){
+  const tr=(a,v,cls)=>`<tr${cls?` class="${cls}"`:''}><td>${esc(a)}</td><td class="n">${mny(v,0)}</td></tr>`;
+  const ntx=x=>x.notes&&x.notes.length?' ('+x.notes.map(n=>n.t.replace('{v}',fmt(n.v))).join(' · ')+')':'';
+  const rows=s=>s.rows.map(x=>{
+    let h=tr(x.a+ntx(x),x.v,x.total?'t':x.sub?'g':'');
+    if(x.sub)h+=x.sub.map(t=>tr(t.a,t.v,'s'+(t.mut?' m':''))).join('');
+    return h}).join('');
+  const chs=(r.charts||[]).map(c=>`<h2>${esc(c.h)}</h2><div class="gr">${chartHTML(c,CT_EXP)}</div>${c.nota?`<p class="o">${esc(c.nota)}</p>`:''}`).join('');
+  return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(r.titulo)}</title>
+<style>body{font-family:system-ui,Arial,sans-serif;max-width:720px;margin:20px auto;padding:0 14px;color:#16302b}h1{font-size:22px;margin-bottom:2px}h2{font-size:16px;margin:22px 0 6px;color:#0f766e}.o{color:#64748b;font-size:12px;margin:4px 0 0}.gr{max-width:420px}table{width:100%;border-collapse:collapse}td{padding:5px 6px;border-bottom:1px solid #e2e8e6;font-size:14px;vertical-align:top}td.n{text-align:right;white-space:nowrap}tr.g td{font-weight:700}tr.t td{font-weight:700;border-top:2px solid #16302b}tr.s td{font-size:12px;color:#475569;padding-left:22px}tr.m td{font-style:italic;opacity:.7}</style></head><body>
+<h1>${esc(r.titulo)}</h1><p class="o">Minha Vida Financeira · gerado em ${fdate(today())}${r.obs?' · '+esc(r.obs):''}</p>
+${chs}
+${r.secs.map(s=>`<h2>${esc(s.h)}</h2><table>${rows(s)}</table>`).join('')}</body></html>`;
+}
+async function entregaArquivo(nome,txt,mime){
+  const file=new File([txt],nome,{type:mime});
+  try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:nome});return}}
+  catch(e){if(e&&e.name==='AbortError')return}
+  const a=document.createElement('a');a.href=URL.createObjectURL(file);a.download=nome;
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+}
+function exportaRel(){
+  const r=rel(tabH,mesH);
+  entregaArquivo('relatorio-'+r.nome+'-'+mesH+'.html',relHTML(r),'text/html');
+}
+
+/* ---------- BACKUP ---------- */
+function exportar(){entregaArquivo(nomeBackup(),JSON.stringify(S),'application/json')}
+/* importar: o nome vem só do arquivo. Backup sem nome => a tela inicial volta a pedir o nome */
+function importar(inp){
+  const f=inp.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const d=JSON.parse(r.result);
+      if(!d||!Array.isArray(d.contas)||!Array.isArray(d.dividas)||!Array.isArray(d.movs))throw 0;
+      if(!confirm('Substituir TODOS os dados atuais pelos do backup?')){inp.value='';return}
+      const t=S.tema;S=Object.assign(DEF(),d);S.flags=d.flags||{};S.tema=d.tema||t;
+      S.nome=typeof d.nome==='string'?d.nome:'';
+      save();location.reload();
+    }catch(e){alert('Arquivo inválido. Use um backup exportado pelo próprio app.');inp.value=''}
+  };
+  r.readAsText(f);
+}
+
+/* ---------- BLOQUEIO (senha / padrão / biometria do aparelho) ---------- */
+const LKEY='vfLock';
+const b64=buf=>btoa(String.fromCharCode(...new Uint8Array(buf)));
+const unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+let L=Object.assign({on:false,id:null,min:1},JSON.parse(localStorage.getItem(LKEY)||'null')||{});
+const saveL=()=>localStorage.setItem(LKEY,JSON.stringify(L));
+let locked=L.on,authBusy=false,hiddenAt=0;
+const liberaBusy=()=>setTimeout(()=>{authBusy=false},600);
+
+async function lockDisponivel(){
+  if(!window.isSecureContext||!window.PublicKeyCredential||!navigator.credentials)return false;
+  try{return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()}catch(e){return false}
+}
+function showLock(){
+  $('lock').style.display=locked?'flex':'none';
+  $('app').style.display=locked?'none':'';
+  $('modal').style.display=locked?'none':'';
+}
+async function pedeAuth(){
+  authBusy=true;
+  try{
+    await navigator.credentials.get({publicKey:{
+      challenge:crypto.getRandomValues(new Uint8Array(32)),
+      allowCredentials:[{type:'public-key',id:unb64(L.id),transports:['internal']}],
+      userVerification:'required',timeout:60000}});
+    return true;
+  }catch(e){return false}
+  finally{liberaBusy()}
+}
+async function desbloquear(){
+  if(authBusy||!L.on)return;
+  $('lockmsg').textContent='';
+  if(await pedeAuth()){locked=false;showLock()}
+  else $('lockmsg').textContent='Não foi possível desbloquear. Toque em Desbloquear para tentar de novo.';
+}
+async function ativaBloqueio(){
+  if(!(await lockDisponivel()))
+    return alert('Este aparelho ou navegador não permite o bloqueio aqui. Confira se o app está aberto pelo link https e se o celular tem senha, padrão ou biometria configurada.');
+  authBusy=true;
+  try{
+    const cred=await navigator.credentials.create({publicKey:{
+      challenge:crypto.getRandomValues(new Uint8Array(32)),
+      rp:{name:'Minha Vida Financeira'},
+      user:{id:crypto.getRandomValues(new Uint8Array(16)),name:'usuario',displayName:'Usuário'},
+      pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],
+      authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required',residentKey:'preferred'},
+      timeout:60000}});
+    L.on=true;L.id=b64(cred.rawId);saveL();render();
+  }catch(e){alert('O bloqueio não foi ativado (confirmação cancelada ou não suportada).')}
+  finally{liberaBusy()}
+}
+async function desativaBloqueio(){
+  if(!(await pedeAuth()))return alert('Confirmação não concluída. O bloqueio continua ativado.');
+  L.on=false;L.id=null;saveL();render();
+}
+function setMin(v){L.min=Number(v);saveL()}
+function bloquearAgora(){locked=true;showLock()}
+function esqueci(){
+  if(!confirm('Se você não consegue desbloquear, a única saída é APAGAR todos os dados deste app neste aparelho. Continuar?'))return;
+  if(!confirm('Tem certeza? Só dá para recuperar se você tiver um backup.'))return;
+  localStorage.removeItem(KEY);localStorage.removeItem(LKEY);location.reload();
+}
+document.addEventListener('visibilitychange',()=>{
+  if(authBusy||!L.on)return;
+  if(document.hidden){
+    if(locked)return;
+    if(L.min===0){locked=true;showLock()}else hiddenAt=Date.now();
+  }else{
+    if(!locked&&hiddenAt&&Date.now()-hiddenAt>=L.min*60000){locked=true;showLock()}
+    hiddenAt=0;
+    if(locked)desbloquear();
+  }
+});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)atualizaAuto()});
+
+/* ---------- render ---------- */
+const dataHoje=()=>{const s=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});return s.charAt(0).toUpperCase()+s.slice(1)};
+function render(){
+  if(route!=='editmov')editMode='';
+  $('app').innerHTML=screens[route]();
+  if(route==='entradas'||route==='saidas'){
+    updForm();
+    if(route==='entradas'&&preset){$('cat').value='__rend';updForm();if($('refi'))$('refi').value=preset;preset=null}
+  }
+  if(route==='editmov')prefillEdit();
+  if(route==='cartao')hintFat(cartaoAtual);
+  if($('dt'))$('dt').textContent=dataHoje();
+}
+setInterval(()=>{if($('dt'))$('dt').textContent=dataHoje();atualizaAuto()},60000);
+processaRec();
+processaAuto();
+save();
+applyTema();render();showLock();
+if(locked)desbloquear();
+
+/* ---------- funcionamento offline ---------- */
+if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
