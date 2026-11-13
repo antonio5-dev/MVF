@@ -353,9 +353,9 @@ function slug(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/
 function nomeBackup(){const t=today();return (slug(S.nome)||'backup')+'-'+t.slice(5,7)+'-'+t.slice(0,4)+'.json'}
 
 const PARENT={inv:'home',contas:'home',dividas:'home',dinheiro:'home',mov:'home',config:'home',entradas:'mov',saidas:'mov',cartao:'dividas'};
-let route='home',ret='home',mesH=cur(),mesV=cur(),tabH='res',preset=null,cartaoAtual=null,PG=null;
+let route='home',ret='home',mesH=cur(),mesV=cur(),mesR=cur(),tabH='res',preset=null,cartaoAtual=null,PG=null;
 let editId=null,editTp='in',editMode='',OPEDIT=null,TEDIT=null;
-const go=r=>{route=r;if(r==='home')mesV=cur();render();scrollTo(0,0)};
+const go=r=>{route=r;if(r==='home')mesV=cur();if(r==='home'||r==='mov')mesR=cur();render();scrollTo(0,0)};
 function back(){
   if(route==='hist'||route==='tutorial')return go(ret);
   if(route==='editmov')return go(editTp==='in'?'entradas':'saidas');
@@ -464,6 +464,17 @@ const navMes=()=>`<div class="row" style="margin-bottom:8px"><button class="mini
 <input type="month" value="${mesV}" onchange="setMes(this.value)" style="text-align:center;margin:0"><button class="mini nav" onclick="mudaMes(1)">›</button></div>
 ${mesV!==cur()?'<div style="margin-bottom:10px"><button class="mini alt" onclick="irHoje()">Voltar ao mês atual</button></div>':''}`;
 
+/* navegação entre meses (Reservas/Investimentos, Contas bancárias, Entradas e Saídas) */
+function mudaMesR(i){mesR=addM(mesR,i);render()}
+function setMesR(v){if(v){mesR=v;render()}}
+function irHojeR(){mesR=cur();render()}
+const navMesR=()=>`<div class="row" style="margin-bottom:8px"><button class="mini nav" onclick="mudaMesR(-1)">‹</button>
+<input type="month" value="${mesR}" onchange="setMesR(this.value)" style="text-align:center;margin:0"><button class="mini nav" onclick="mudaMesR(1)">›</button></div>
+${mesR!==cur()?'<div style="margin-bottom:10px"><button class="mini alt" onclick="irHojeR()">Voltar ao mês atual</button></div>':''}`;
+/* data sugerida nos formulários: hoje, ou o fim do mês que está sendo consultado */
+const dPad=()=>mesR<cur()?dataMes(mesR,31):mesR>cur()?dataMes(mesR,1):today();
+const MSG_FUT='Este mês ainda não chegou: não há saldos para consultar.';
+
 /* ---------- tipos de investimento ---------- */
 const TIPOS=['Poupança','Ações','Títulos','Fundos','Cripto','Outros'];
 function grupoTipos(list,kf=x=>x.tipo){
@@ -499,12 +510,14 @@ inv:{t:'Reservas/Investimentos',h:`<p>Seus investimentos aparecem separados por 
 <li><b>+ Rendimento:</b> registra o rendimento (ex.: poupança) como entrada e soma ao investimento.</li>
 <li><b>✎</b> em cada investimento edita nome, valor (ou cotação, quantidade e preço médio). <b>🗑</b> remove o item.</li>
 <li>Em <b>Adicionar investimento</b> você cadastra o que já possui, sem mexer em nenhuma conta.</li>
-<li>Em <b>Últimas operações</b>, cada investimento ou resgate tem <b>✎</b> (editar) e <b>🗑</b> (desfazer). Ao editar ou desfazer, os saldos da conta e do investimento são revertidos. Para ações: se parte das ações de uma compra já foi vendida, desfaça antes os resgates posteriores.</li></ul>`},
+<li><b>Escolher o mês:</b> use as setas ‹ › ou o campo de mês no topo para consultar e alterar registros de meses anteriores. Nos meses passados, o valor de cada investimento é o do fim daquele mês (só consulta); para corrigi-lo, edite as operações do mês.</li>
+<li>Em <b>Operações do mês</b>, cada investimento ou resgate tem <b>✎</b> (editar) e <b>🗑</b> (desfazer). Ao editar ou desfazer, os saldos da conta e do investimento são revertidos. Para ações: se parte das ações de uma compra já foi vendida, desfaça antes os resgates posteriores.</li></ul>`},
 contas:{t:'Contas bancárias',h:`<p>Cadastre cada conta com o saldo atual.</p><ul>
 <li>Os saldos mudam sozinhos quando você registra entradas, saídas, pagamentos, investimentos e transferências.</li>
 <li><b>⇄ Transferir / Sacar:</b> move dinheiro entre contas, ou da conta para o Dinheiro (em espécie). Não conta como entrada nem saída.</li>
 <li><b>✎</b> edita nome e saldo da conta. <b>🗑</b> remove a conta.</li>
-<li>Em <b>Últimas transferências e saques</b>, cada item tem <b>✎</b> (editar tudo) e <b>🗑</b> (desfazer e reverter os saldos).</li></ul>`},
+<li><b>Escolher o mês:</b> use as setas ‹ › ou o campo de mês no topo para consultar e alterar registros de meses anteriores. Nos meses passados, o saldo de cada conta é o do fim daquele mês (só consulta); para corrigi-lo, edite as transferências e saques do mês ou os registros em Entradas e Saídas.</li>
+<li>Em <b>Transferências e saques do mês</b>, cada item tem <b>✎</b> (editar tudo) e <b>🗑</b> (desfazer e reverter os saldos).</li></ul>`},
 dinheiro:{t:'Dinheiro (em espécie)',h:`<p>Mostra quanto você tem em dinheiro vivo.</p><ul>
 <li>O saldo muda quando você registra entradas, saídas ou pagamentos em dinheiro, e quando faz um saque de uma conta.</li>
 <li><b>Ajustar saldo manualmente</b> serve para corrigir diferenças.</li></ul>`},
@@ -540,7 +553,8 @@ entradas:{t:'Entradas',h:`<p>Registre tudo o que entra.</p><ul>
 <li><b>Onde entra:</b> Dinheiro, Conta bancária ou Investimento (poupança etc.). A categoria <b>Rendimento de investimento</b> soma direto no investimento escolhido.</li>
 <li>A categoria <b>Ações</b> recebe automaticamente os ganhos das vendas de ações com lucro. É só informativo: o valor da venda já entrou na conta.</li>
 <li>A descrição é opcional. Se ficar em branco, vale o nome da categoria.</li>
-<li><b>✎</b> edita qualquer dado do registro (valor, data, categoria, destino). <b>🗑</b> exclui e reverte o saldo.</li></ul>`},
+<li><b>✎</b> edita qualquer dado do registro (valor, data, categoria, destino). <b>🗑</b> exclui e reverte o saldo.</li>
+<li><b>Escolher o mês:</b> use as setas ‹ › ou o campo de mês no topo para consultar e alterar registros de meses anteriores. Os registros de qualquer mês podem ser editados ou excluídos.</li></ul>`},
 saidas:{t:'Saídas',h:`<p>Registre o que você já pagou ou gastou.</p><ul>
 <li>Escolha a <b>categoria</b> (Mercado, Gasolina, Aluguel, Ações…). Em <b>➕ Nova categoria</b> você cria, edita (✎) ou remove categorias.</li>
 <li>Escolha como pagou: <b>Dinheiro</b> ou <b>Conta bancária</b>. O saldo é debitado na hora.</li>
@@ -549,7 +563,8 @@ saidas:{t:'Saídas',h:`<p>Registre o que você já pagou ou gastou.</p><ul>
 <li>Os pagamentos de dívidas (manuais ou por débito automático) também aparecem aqui, na categoria da dívida.</li>
 <li>A categoria <b>Ações</b> recebe automaticamente as perdas das vendas de ações. É só informativo: o valor da venda já entrou na conta.</li>
 <li>A descrição é opcional. Se ficar em branco, vale o nome da categoria.</li>
-<li><b>✎</b> edita qualquer dado do registro. <b>🗑</b> exclui e reverte o saldo.</li></ul>`},
+<li><b>✎</b> edita qualquer dado do registro. <b>🗑</b> exclui e reverte o saldo.</li>
+<li><b>Escolher o mês:</b> use as setas ‹ › ou o campo de mês no topo para consultar e alterar registros de meses anteriores. Os registros de qualquer mês podem ser editados ou excluídos.</li></ul>`},
 editmov:{t:'Editar registro',h:`<p>Altere o que precisar e toque em <b>Salvar alterações</b>. Os saldos são recalculados automaticamente.</p><ul>
 <li>Você pode mudar categoria, descrição, valor, data e onde o dinheiro entrou ou saiu.</li>
 <li><b>Pagamentos de dívidas</b> não permitem mudar o valor (ele vem das cobranças pagas), mas dá para mudar descrição, categoria, data e a conta usada. Excluir um pagamento aqui equivale a usar o <b>↩ desfazer</b> em Dívidas: a cobrança volta a ficar em aberto.</li>
@@ -561,7 +576,7 @@ hist:{t:'Relatórios',h:`<p>Veja e exporte relatórios de qualquer mês, com gr�
 <li><b>Resumo:</b> total de entradas, saídas e saldo do mês, com os totais por categoria (sem gráfico).</li>
 <li><b>Entradas</b> e <b>Saídas:</b> gráfico de pizza por categoria e, abaixo, todos os lançamentos do mês divididos por categoria. Toque numa categoria para ver os lançamentos. Os pagamentos de dívidas aparecem na categoria de saída de cada dívida.</li>
 <li><b>Dívidas/cartões:</b> gráfico de pizza com o peso de cada cartão e de cada dívida nas cobranças do mês, já dividido por categoria (a legenda mostra cartão/dívida · categoria), e a lista com o que está pago, em aberto e em atraso, mais os pagamentos efetuados (inclusive por débito automático).</li>
-<li><b>Ações:</b> gráfico de pizza com ganhos, perdas e tarifas (saídas lançadas na categoria Ações) do mês, o resultado líquido e todas as movimentações em ordem cronológica.</li>
+<li><b>Ações:</b> gráfico de pizza com ganhos, perdas e tarifas (saídas lançadas na categoria Ações) do mês e o resultado líquido. Toque em Ganhos, Perdas ou Tarifas para ver os registros do mês, dos mais recentes para os mais antigos. Em Movimentações do Mês ficam as compras e as vendas de ações.</li>
 <li><b>Contas:</b> gráfico de pizza com o saldo de cada conta e do dinheiro em espécie, e as movimentações do mês (entradas, saídas, pagamentos, transferências, saques, aplicações e resgates).</li>
 <li><b>Investimentos:</b> gráfico de pizza por tipo de investimento, posição no fim do mês, aplicações, resgates e rendimentos.</li>
 <li><b>Patrimônio:</b> gráfico de pizza (contas, dinheiro e investimentos) e gráfico de barras com a evolução do patrimônio nos últimos meses. A barra verde é o mês escolhido.</li>
@@ -614,18 +629,23 @@ home(){
 },
 inv:()=>telaInv(),
 contas(){
-  const it=S.contas.map(x=>`<div class="card row"><b>${esc(x.nome)}</b><div style="white-space:nowrap"><b>${brl(x.valor)}</b>
-  <button class="ic" onclick="editaConta('${x.id}')">✎</button><button class="ic" onclick="delItem('contas','${x.id}')">🗑</button></div></div>`).join('')||'<p class="sub">Nada cadastrado ainda.</p>';
+  const view=mesR!==cur(),futuro=mesR>cur(),sn=view?snapDe(mesR):null;
+  const it=!view
+    ?(S.contas.map(x=>`<div class="card row"><b>${esc(x.nome)}</b><div style="white-space:nowrap"><b>${brl(x.valor)}</b>
+  <button class="ic" onclick="editaConta('${x.id}')">✎</button><button class="ic" onclick="delItem('contas','${x.id}')">🗑</button></div></div>`).join('')||'<p class="sub">Nada cadastrado ainda.</p>')
+    :(futuro?`<p class="sub">${MSG_FUT}</p>`:sn?(sn.contas.map(x=>`<div class="card row"><b>${esc(x.n)}</b><b>${brl(x.v)}</b></div>`).join('')||'<p class="sub">Nenhuma conta registrada neste mês.</p>'):`<p class="sub">${SEM_SNAP}</p>`);
+  const total=!view?sumv(S.contas.map(x=>x.valor)):(sn?sumv(sn.contas.map(x=>x.v)):0);
   const nc=(id,fb)=>{const c=find('contas',id);return c?c.nome:fb};
-  const tr=S.transf.slice(-15).reverse().map(t=>`<div class="card row"><div><b>${t.tipo==='sq'?'💵 Saque':'⇄ Transferência'}</b><br>
+  const tr=S.transf.filter(t=>t.data.slice(0,7)===mesR).sort((a,b)=>b.data.localeCompare(a.data)).map(t=>`<div class="card row"><div><b>${t.tipo==='sq'?'💵 Saque':'⇄ Transferência'}</b><br>
     <small>${fdate(t.data)} · ${esc(nc(t.de,t.deNome))} → ${t.tipo==='sq'?'Dinheiro':esc(nc(t.para,t.paraNome))}</small></div>
     <div style="white-space:nowrap"><b>${brl(t.valor)}</b><button class="ic" onclick="opTransf('${t.id}')">✎</button><button class="ic" onclick="delTransf('${t.id}')">🗑</button></div></div>`).join('');
-  return head('Contas bancárias')+`<div class="pad"><div class="card total"><small>Total</small><div class="v" style="font-size:24px">${brl(sumv(S.contas.map(x=>x.valor)))}</div></div>
-  <button class="add" style="margin-bottom:12px" onclick="opTransf()">⇄ Transferir / Sacar</button>${it}
-  <h3>Adicionar</h3><div class="card"><input id="n" placeholder="Ex.: Nubank">
+  return head('Contas bancárias')+`<div class="pad">${navMesR()}<div class="card total"><small>${view?'Total no fim de '+mlabel(mesR):'Total'}</small><div class="v" style="font-size:24px">${brl(total)}</div></div>
+  <button class="add" style="margin-bottom:12px" onclick="opTransf()">⇄ Transferir / Sacar</button>
+  ${view&&!futuro?'<p class="sub" style="margin:0 2px 10px">Saldos no fim do mês. Para corrigir um saldo antigo, edite as transferências e saques abaixo ou os registros do mês em Entradas e Saídas: os saldos se ajustam sozinhos.</p>':''}${it}
+  ${view?'':`<h3>Adicionar</h3><div class="card"><input id="n" placeholder="Ex.: Nubank">
   <input id="v" type="number" step="0.01" inputmode="decimal" placeholder="Saldo atual">
-  <button class="add" onclick="addConta()">Adicionar</button></div>
-  ${tr?'<h3>Últimas transferências e saques</h3>'+tr:''}${btnCons()}</div>`;
+  <button class="add" onclick="addConta()">Adicionar</button></div>`}
+  <h3>${view?'Transferências e saques de '+mlabel(mesR):'Transferências e saques do mês'}</h3>${tr||'<p class="sub">Nenhum registro neste mês.</p>'}${btnCons()}</div>`;
 },
 dividas:()=>telaDiv(),
 cartao:()=>telaCartao(),
@@ -729,7 +749,7 @@ function opTransf(eid){
   <small>Da conta</small><select id="tde" onchange="updTq()">${opts(S.contas,x=>esc(x.nome)+' ('+fmt(x.valor)+')')}</select>
   <div id="tpw"></div>
   <input id="tv" type="number" step="0.01" inputmode="decimal" placeholder="Valor">
-  <input id="td" type="date" value="${today()}">
+  <input id="td" type="date" value="${dPad()}">
   <button class="add" onclick="execTransf()">${eid?'Salvar alterações':'Confirmar'}</button><button class="add cancel" onclick="closeModal()">Cancelar</button>`);
   updTq();
   if(eid){
@@ -787,19 +807,26 @@ function cardInv(x){
     <button class="ic" onclick="editaInv('${x.id}')">✎</button><button class="ic" onclick="delItem('inv','${x.id}')">🗑</button></div></div></div>`;
 }
 function telaInv(){
-  const itens=grupoTipos(S.inv).map(g=>`<div class="row gh"><b>${esc(g.t)}</b><b>${brl(sumv(g.l.map(V)))}</b></div>`+g.l.map(cardInv).join('')).join('')||'<p class="sub">Nada cadastrado ainda.</p>';
-  const ops=S.ops.slice(-15).reverse().map(o=>`<div class="card row"><div><b>${o.dir==='inv'?'Investiu em':'Resgatou de'} ${esc(o.inv)}</b><br>
+  const view=mesR!==cur(),futuro=mesR>cur(),sn=view?snapDe(mesR):null;
+  let itens;
+  if(!view)itens=grupoTipos(S.inv).map(g=>`<div class="row gh"><b>${esc(g.t)}</b><b>${brl(sumv(g.l.map(V)))}</b></div>`+g.l.map(cardInv).join('')).join('')||'<p class="sub">Nada cadastrado ainda.</p>';
+  else if(futuro)itens=`<p class="sub">${MSG_FUT}</p>`;
+  else if(!sn)itens=`<p class="sub">${SEM_SNAP}</p>`;
+  else itens=grupoTipos(sn.inv,x=>x.t).map(g=>`<div class="row gh"><b>${esc(g.t)}</b><b>${brl(sumv(g.l.map(i=>i.v)))}</b></div>`+g.l.map(i=>`<div class="card row"><div><b>${esc(i.n)}</b>${i.t==='Ações'?`<br><small>${i.q} un.</small>`:''}</div><b>${brl(i.v)}</b></div>`).join('')).join('')||'<p class="sub">Nenhum investimento registrado neste mês.</p>';
+  const total=!view?sumv(S.inv.map(V)):(sn?sumv(sn.inv.map(i=>i.v)):0);
+  const ops=S.ops.filter(o=>o.data.slice(0,7)===mesR).sort((a,b)=>b.data.localeCompare(a.data)).map(o=>`<div class="card row"><div><b>${o.dir==='inv'?'Investiu em':'Resgatou de'} ${esc(o.inv)}</b><br>
     <small>${fdate(o.data)} · ${o.dir==='inv'?'de':'para'} ${esc(o.conta)}${o.q?` · ${o.q} × ${brl(o.p)}`:''}${o.ganho?` · ${o.ganho>0?'ganho':'perda'} ${brl(Math.abs(o.ganho))}`:''}</small></div>
     <div style="white-space:nowrap"><b class="${o.dir==='inv'?'neg':'pos'}">${brl(o.total)}</b><button class="ic" onclick="opInv('${o.id}')">✎</button><button class="ic" onclick="delOp('${o.id}')">🗑</button></div></div>`).join('');
-  return head('Reservas/Investimentos')+`<div class="pad"><div class="card total"><small>Total investido</small><div class="v" style="font-size:24px">${brl(sumv(S.inv.map(V)))}</div></div>
-  <button class="add" style="margin-bottom:6px" onclick="opInv()">⇄ Investir / Resgatar</button>${itens}
-  <h3>Adicionar investimento</h3><div class="card"><input id="n" placeholder="Ex.: Poupança Caixa, PETR4">
+  return head('Reservas/Investimentos')+`<div class="pad">${navMesR()}<div class="card total"><small>${view?'Total investido no fim de '+mlabel(mesR):'Total investido'}</small><div class="v" style="font-size:24px">${brl(total)}</div></div>
+  <button class="add" style="margin-bottom:6px" onclick="opInv()">⇄ Investir / Resgatar</button>
+  ${view&&!futuro?'<p class="sub" style="margin:0 2px 10px">Posição no fim do mês. Para corrigir um valor antigo, edite as operações abaixo ou os rendimentos do mês em Entradas: os saldos se ajustam sozinhos.</p>':''}${itens}
+  ${view?'':`<h3>Adicionar investimento</h3><div class="card"><input id="n" placeholder="Ex.: Poupança Caixa, PETR4">
   <select id="tp" onchange="updInvForm()">${TIPOS.map(t=>`<option>${t}</option>`).join('')}</select>
   <div id="fn"><input id="v" type="number" step="0.01" inputmode="decimal" placeholder="Valor atual"></div>
   <div id="fa" style="display:none"><input id="pu" type="number" step="any" inputmode="decimal" placeholder="Preço unitário da ação">
   <input id="qt" type="number" step="any" inputmode="decimal" placeholder="Quantidade"></div>
-  <button class="add" onclick="addInv()">Adicionar</button></div>
-  ${ops?'<h3>Últimas operações</h3>'+ops:''}${btnCons()}</div>`;
+  <button class="add" onclick="addInv()">Adicionar</button></div>`}
+  <h3>${view?'Operações de '+mlabel(mesR):'Operações do mês'}</h3>${ops||'<p class="sub">Nenhuma operação neste mês.</p>'}${btnCons()}</div>`;
 }
 function updInvForm(){const ac=$('tp').value==='Ações';$('fa').style.display=ac?'':'none';$('fn').style.display=ac?'none':''}
 function addInv(){
@@ -846,7 +873,7 @@ function opInv(eid){
   <div id="onw"></div>
   <small>Conta bancária</small><select id="oc">${opts(S.contas)}</select>
   <div id="of"></div><div id="ot" class="sub"></div>
-  <input id="od" type="date" value="${today()}">
+  <input id="od" type="date" value="${dPad()}">
   <button class="add" onclick="execOp()">${eid?'Salvar alterações':'Confirmar'}</button><button class="add cancel" onclick="closeModal()">Cancelar</button>`);
   updDir();
   if(eid){
@@ -1560,24 +1587,24 @@ function formCampos(tp){
   <button class="mini alt" onclick="modalCats('${tp}')">➕ Nova categoria</button>
   <input id="d" placeholder="Descrição (opcional)">
   <input id="v" type="number" step="0.01" inputmode="decimal" placeholder="Valor">
-  <input id="dt2" type="date" value="${today()}" onchange="hintSaida()"><small id="hf2"></small>
+  <input id="dt2" type="date" value="${dPad()}" onchange="hintSaida()"><small id="hf2"></small>
   <div id="mw"><select id="meio" onchange="updForm()"><option value="dinheiro">💵 Dinheiro</option><option value="conta">🏦 Conta bancária</option>${out?'':'<option value="rend">📈 Investimento (poupança etc.)</option>'}</select></div>
   <div id="ref"></div>`;
 }
 function telaMov(tp){
-  const mm=cur(),out=tp==='out';
+  const mm=mesR,view=mesR!==cur(),out=tp==='out';
   const todos=S.movs.filter(m=>m.tipo===tp);
   const ms=todos.filter(m=>m.data.slice(0,7)===mm);
-  const prox=out?[]:todos.filter(m=>m.pend&&m.data.slice(0,7)>mm);
+  const prox=(out||view)?[]:todos.filter(m=>m.pend&&m.data.slice(0,7)>mm);
   const aRec=out?0:sumv(ms.filter(m=>m.pend).map(m=>m.valor));
-  const inc=out?[]:S.cats.in.filter(c=>c.rec&&!recCompleta(c,'in'));
-  return head(out?'Saídas':'Entradas')+`<div class="pad"><div class="card total"><small>Total do mês</small><div class="v" style="font-size:24px">${brl(totMov(ms))}</div>
-  ${aRec>0?`<small>A receber neste mês (lançamentos futuros): ${brl(aRec)}</small>`:''}</div>
+  const inc=(out||view)?[]:S.cats.in.filter(c=>c.rec&&!recCompleta(c,'in'));
+  return head(out?'Saídas':'Entradas')+`<div class="pad">${navMesR()}<div class="card total"><small>${view?'Total de '+mlabel(mesR):'Total do mês'}</small><div class="v" style="font-size:24px">${brl(totMov(ms))}</div>
+  ${aRec>0?`<small>A receber ${view?'em '+mlabel(mesR):'neste mês'} (lançamentos futuros): ${brl(aRec)}</small>`:''}</div>
   ${out?'<p class="sub" style="margin:-4px 2px 12px">Aqui entram só gastos e pagamentos que já aconteceram. Compromissos futuros (pagamentos recorrentes, compras no Cartão, contas a vencer) são registrados em Dívidas e viram saída quando pagos.</p>':''}
   ${inc.length?`<div class="card"><small class="warn">⚠ Recorrente sem configuração: ${inc.map(c=>esc(c.nome)).join(', ')}. Toque em ➕ Nova categoria e depois em ✎ para informar valor, dia e onde entra. Assim o lançamento passa a ser automático.</small></div>`:''}
   <div class="card"><b>${out?'Novo gasto':'Nova entrada'}</b>${formCampos(tp)}
   <button class="add" onclick="addMov('${tp}')">Registrar</button></div>
-  <h3>Registros deste mês</h3>${listaMov(ms)}
+  <h3>${view?'Registros de '+mlabel(mesR):'Registros deste mês'}</h3>${listaMov(ms)}
   ${prox.length?'<h3>Próximos meses</h3>'+listaMov(prox,1):''}${btnCons()}</div>`;
 }
 function hintSaida(){
@@ -1891,30 +1918,30 @@ function relAcoes(mes){
   const real=ms.filter(m=>!m.pend);
   const gan=real.filter(m=>m.tipo==='in'),per=real.filter(m=>m.tipo==='out'&&m.auto),tar=real.filter(m=>m.tipo==='out'&&!m.auto);
   const G=sumv(gan.map(m=>m.valor)),P=sumv(per.map(m=>m.valor)),T=sumv(tar.map(m=>m.valor)),liq=r2(G-P-T);
-  const ev=[];
-  S.ops.filter(o=>o.q&&ym(o.data)).forEach(o=>{
-    const i=opInvest(o),c=opConta(o);
-    ev.push({d:o.data,o:0,a:(o.dir==='inv'?'Compra de ':'Venda de ')+(i?i.nome:o.inv)+' · '+o.q+' un. × '+fmt(o.p)+(o.dir==='inv'?' · saiu de ':' · entrou em ')+(c?c.nome:o.conta),v:o.total});
-  });
-  ms.forEach(m=>{
-    const fut=m.pend?' · lançamento futuro (não somado)':'';
-    if(m.tipo==='in')ev.push({d:m.data,o:1,a:'Ganho · '+m.desc+fut,v:m.valor,c:'pos'});
-    else if(m.auto)ev.push({d:m.data,o:1,a:'Perda · '+m.desc,v:m.valor,c:'neg'});
-    else ev.push({d:m.data,o:1,a:'Tarifa · '+m.desc+fut,v:m.valor,c:'neg'});
-  });
-  ev.sort((a,b)=>a.d.localeCompare(b.d)||a.o-b.o);
-  const rows=ev.map(x=>({a:fdate(x.d)+' · '+x.a,v:x.v,c:x.c}));
+  /* linha expansível com os registros do mês, dos mais recentes para os mais antigos (padrão dos outros relatórios) */
+  const grupo=(a,v,c,l)=>{
+    const x={a,v,c};
+    if(l.length)x.sub=l.slice().sort((p,q)=>q.data.localeCompare(p.data)).map(m=>({a:fdate(m.data)+' · '+m.desc,v:m.valor}));
+    return x;
+  };
+  const opLin=o=>{const i=opInvest(o),c=opConta(o);return{d:o.data,a:fdate(o.data)+' · '+(i?i.nome:o.inv)+' · '+o.q+' un. × '+fmt(o.p)+(o.dir==='inv'?' · saiu de ':' · entrou em ')+(c?c.nome:o.conta),v:o.total}};
+  const ops=S.ops.filter(o=>o.q&&ym(o.data));
+  const comp=ops.filter(o=>o.dir==='inv').map(opLin),vend=ops.filter(o=>o.dir!=='inv').map(opLin);
+  const mov=(a,l)=>({a,v:sumv(l.map(x=>x.v)),sub:l.sort((p,q)=>q.d.localeCompare(p.d)).map(x=>({a:x.a,v:x.v}))});
+  const movs=[];
+  if(comp.length)movs.push(mov('Compras de ações',comp));
+  if(vend.length)movs.push(mov('Vendas de ações',vend));
   return{titulo:'Ações · '+mlabel(mes),nome:'acoes',
-    obs:'Ganhos e perdas vêm do registro automático das vendas de ações. Tarifas são as saídas lançadas por você na categoria Ações. Compras e vendas aparecem na lista só para acompanhar a ordem dos fatos e não entram nos totais.',
+    obs:'Ganhos e perdas vêm do registro automático das vendas de ações. Tarifas são as saídas lançadas por você na categoria Ações. Compras e vendas aparecem em Movimentações do Mês só para acompanhar e não entram nos totais.',
     charts:[{kind:'pie',h:'Ganhos, perdas e tarifas em ações',data:[{l:'Ganhos',v:G},{l:'Perdas',v:P},{l:'Tarifas',v:T}],nota:'Todos os valores do gráfico são mostrados em módulo.'}],
     secs:[
     {h:'Resumo do mês',rows:[
-      {a:'Ganhos',v:G,c:'pos'},
-      {a:'Perdas',v:P,c:'neg'},
+      grupo('Ganhos',G,'pos',gan),
+      grupo('Perdas',P,'neg',per),
       {a:'Ganho/perda das vendas (antes das tarifas)',v:r2(G-P),c:G-P>=0?'pos':'neg'},
-      {a:'Tarifas',v:T,c:'neg'},
+      grupo('Tarifas',T,'neg',tar),
       {a:'Resultado líquido do mês',v:liq,c:liq>=0?'pos':'neg',total:1}]},
-    {h:'Movimentações em ordem cronológica',rows:rows.length?rows:[{a:'Nenhuma movimentação com ações neste mês.'}]}]};
+    {h:'Movimentações do Mês',rows:movs.length?movs:[{a:'Nenhuma compra ou venda de ações neste mês.'}]}]};
 }
 function relCont(mes){
   const ym=d=>d.slice(0,7)===mes,sn=snapDe(mes);
