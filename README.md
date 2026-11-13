@@ -34,7 +34,7 @@ Por isso:
 
 ### 1. Acessando o site
 
-Abra o endereço publicado do app no navegador (celular ou computador):
+Abra o endereço publicado do app no navegador celular:
 
 ```
 https://appminhavidafinanceira.vercel.app
@@ -59,16 +59,3 @@ No iPhone (Safari): botão de compartilhar → **Adicionar à Tela de Início**.
 
 > O site precisa ser aberto por **https** para a instalação e o bloqueio por biometria funcionarem.
 
-### 3. Testando no computador (opcional)
-
-Na pasta do projeto:
-
-```bash
-python3 -m http.server 8000
-```
-
-Depois abra `http://localhost:8000` no navegador. O `localhost` é aceito como seguro, então o service worker funciona.
-
-## Atualizando o app instalado
-
-O service worker busca a versão mais nova sempre que há internet. Depois de publicar uma alteração, abra o app com conexão e feche-o por completo; na abertura seguinte, a versão nova será carregada.
